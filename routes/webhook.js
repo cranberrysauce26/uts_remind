@@ -22,6 +22,7 @@ router.post('/', function (req, res) {
             conversation.respond(messagingEvent);
         });
     }
+    res.sendStatus(200);
 });
 
 module.exports = router;

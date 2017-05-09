@@ -6,5 +6,4 @@ module.exports = class Group {
     constructor(groupName) {
         this.name = groupName;
     }
-
 }

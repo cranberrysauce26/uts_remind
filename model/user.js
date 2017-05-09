@@ -1,5 +1,5 @@
 'use strict';
-var connection = require('./connection');
+var driver = require('./driver');
 
 var Event = require('./event');
 

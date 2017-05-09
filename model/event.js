@@ -1,7 +1,7 @@
 'use strict';
 
 const
-    connection = require('./connection');
+    driver = require('./driver');
     facebook = require('../facebook/facebook');
     remind = require('./remind');
     schedule = require('node-schedule');
@@ -28,13 +28,7 @@ module.exports = class Event {
 
 
     static doesEventExist() {
-        const queryString = 'SELECT * FROM Events WHERE EventName="'+this.name+'"';
-        connection.query(queryString, function(err, rows) {
-            if (rows.length > 0) {
-                return true;
-            }
-            return false;
-        });
+       
     }
 
     // Configuration

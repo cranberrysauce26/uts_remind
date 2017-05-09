@@ -1,3 +1,4 @@
+'use strict';
 // node modules
 const
   express = require('express');

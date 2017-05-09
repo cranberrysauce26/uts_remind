@@ -2,7 +2,7 @@
 // node modules
 const path = require('path');
 const express = require('express');
-const logger = require('morgan');
+// const logger = require('morgan');
 const bodyParser = require('body-parser');
 const request = require('request');
 const schedule = require('node-schedule');
@@ -20,7 +20,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(logger('dev'));
+// app.use(logger('dev'));
 app.use(bodyParser.json({ verify: facebook.verification.verifyRequestSignature }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));

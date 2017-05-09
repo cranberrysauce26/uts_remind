@@ -6,8 +6,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
 const schedule = require('node-schedule');
+const crypto = require('crypto');
 
-var facebook = require('./facebook');
+
+const facebook = require('./facebook');
 
 // routers
 const index = require('./routes/index');

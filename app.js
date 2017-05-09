@@ -1,20 +1,18 @@
 'use strict';
 // node modules
-const
-  express = require('express');
-  path = require('path');
-  logger = require('morgan');
-  bodyParser = require('body-parser');
-  request = require('request');
-  schedule = require('node-schedule');
+const path = require('path');
+const express = require('express');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+const request = require('request');
+const schedule = require('node-schedule');
 
 const verification = require('./facebook/verification');
 
 // routers
-const 
-  index = require('./routes/index');
-  webhook = require('./routes/webhook');
-  authorize = require('./routes/authorize');
+const index = require('./routes/index');
+const webhook = require('./routes/webhook');
+const authorize = require('./routes/authorize');
 
 var app = express();
 

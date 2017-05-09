@@ -9,7 +9,8 @@ module.exports.verifyRequestSignature = function(req, res, buf) {
     // error.
     console.error("Couldn't validate the signature.");
   } else {
-    console.log("Successfully verified request signature");
+    console.log("Successfully verified request signature. request==");
+    console.log(request);
     var elements = signature.split('=');
     var method = elements[0];
     var signatureHash = elements[1];

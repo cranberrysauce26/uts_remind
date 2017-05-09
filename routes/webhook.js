@@ -2,7 +2,7 @@
 
 const express = require('express');
 var router = express.Router();
-
+var conversation = require('../conversation');
 
 router.get('/', function(req, res) {
     if (req.query["hub.verify_token"] === process.env.VALIDATION_TOKEN) {

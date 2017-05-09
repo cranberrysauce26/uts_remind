@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const request = require('request');
 const schedule = require('node-schedule');
 
-const verification = require('./facebook/verification');
+var facebook = require('./facebook');
 
 // routers
 const index = require('./routes/index');
@@ -21,7 +21,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
-app.use(bodyParser.json({ verify: verification.verifyRequestSignature }));
+app.use(bodyParser.json({ verify: facebook.verification.verifyRequestSignature }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 

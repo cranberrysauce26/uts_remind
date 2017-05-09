@@ -3,8 +3,6 @@ const facebook = require('./../facebook')
 
 module.exports = function(event) {
     var senderID = event.sender.id;
-    var recipientID = event.recipient.id;
-    var timeOfMessage = event.timestamp;
     var message = event.message;
 
     console.log("Received message for user "+senderID+". Here's the message:");

@@ -6,7 +6,6 @@ const recievedMessage = require('./recieved-message');
 
 module.exports = {
     respond: function (messagingEvent) {
-
     
         //See https://developers.facebook.com/docs/messenger-platform/webhook-reference 
 

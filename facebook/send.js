@@ -4,8 +4,7 @@ const request = require('request');
 
 function send(messageData) {
     request({
-        // uri: 'https://graph.facebook.com/v2.6/me/messages',
-        uri: 'https://graph.facebook.com/v2.6/:pageid',
+        uri: 'https://graph.facebook.com/v2.6/me/messages',
         qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
         method: 'POST',
         json: messageData

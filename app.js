@@ -30,7 +30,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 // using the routeres
 
 app.use('/', index);
-app.post('/', function (req, res) {
+// app.use('/webhook', webhook);
+
+// TESTING
+var conversation = require('../conversation');
+
+router.get('/', function (req, res) {
+    console.log("GET call to webhook");
+    if (req.query["hub.verify_token"] === process.env.VERIFY_TOKEN) {
+        console.log("Verified webhook");
+        res.status(200).send(req.query["hub.challenge"]);
+    } else {
+        console.error("Verification failed. The tokens do not match.");
+        res.sendStatus(403);
+    }
+});
+
+router.post('/', function (req, res) {
     console.log("POST call to webhook");
 
     var data = req.body;
@@ -42,7 +58,8 @@ app.post('/', function (req, res) {
         res.sendStatus(200);
     }
 });
-app.use('/webhook', webhook);
+// END TESTING
+
 app.use('/authorize', authorize);
 
 // catch 404 and forward to error handler

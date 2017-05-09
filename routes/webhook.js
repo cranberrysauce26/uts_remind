@@ -15,17 +15,17 @@ router.get('/', function (req, res) {
     }
 });
 
-// router.post('/', function (req, res) {
-//     console.log("POST call to webhook");
+router.post('/', function (req, res) {
+    console.log("POST call to webhook");
 
-//     var data = req.body;
+    var data = req.body;
 
-//     if (data.object === 'page') {
-//         data.entry.forEach(function (messagingEvent) {
-//             conversation.respond(messagingEvent);
-//         });
-//         res.sendStatus(200);
-//     }
-// });
+    if (data.object === 'page') {
+        data.entry.forEach(function (messagingEvent) {
+            conversation.respond(messagingEvent);
+        });
+        res.sendStatus(200);
+    }
+});
 
 module.exports = router;

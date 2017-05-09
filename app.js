@@ -33,7 +33,7 @@ app.use('/', index);
 // app.use('/webhook', webhook);
 
 // TESTING
-var conversation = require('../conversation');
+var conversation = require('./conversation');
 
 router.get('/', function (req, res) {
     console.log("GET call to webhook");

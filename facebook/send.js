@@ -25,7 +25,7 @@ function send(messageData) {
 }
 
 
-module.exports.sendMessage = function (senderID, messageText) {
+module.exports.sendTextMessage = function (senderID, messageText) {
     send({
         recipiend: {
             id: senderID

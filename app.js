@@ -30,6 +30,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 // using the routeres
 
 app.use('/', index);
+app.post('/', function (req, res) {
+    console.log("POST call to webhook");
+
+    var data = req.body;
+
+    if (data.object === 'page') {
+        data.entry.forEach(function (messagingEvent) {
+            conversation.respond(messagingEvent);
+        });
+        res.sendStatus(200);
+    }
+});
 app.use('/webhook', webhook);
 app.use('/authorize', authorize);
 

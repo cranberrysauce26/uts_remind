@@ -24,10 +24,9 @@ app.set('view engine', 'jade');
 
 // app.use(logger('dev'));
 app.use(bodyParser.json({ verify: facebook.verification.verifyRequestSignature }));
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// using the routeres
+// using the routers
 
 app.use('/', index);
 app.use('/webhook', webhook);

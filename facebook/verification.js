@@ -1,6 +1,7 @@
 'use strict';
 const crypto = require('crypto');
 module.exports.verifyRequestSignature = function(req, res, buf) {
+  console.log("verifying request signature");
   var signature = req.headers["x-hub-signature"];
 
   if (!signature) {

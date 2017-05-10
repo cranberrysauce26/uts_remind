@@ -9,9 +9,12 @@ module.exports = {
     
         //See https://developers.facebook.com/docs/messenger-platform/webhook-reference 
         console.log("responding in conversation");
-        if (messagingEvent.message) {
+       
+        if (messagingEvent.messaging) {
             console.log("recieved a message");
-            recievedMessage(messageEvent);
+            messagingEvent.messaging.forEach(function(message) {
+                recievedMessage(message);
+            });
         } else {
             console.log("Webhook received unknown messagingEvent: ", messagingEvent);
         }

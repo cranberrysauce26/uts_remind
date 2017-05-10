@@ -16,11 +16,15 @@ router.get('/', function (req, res) {
 });
 
 router.post('/', function (req, res) {
-    console.log("POST call to webhook");
+    console.log("POST call to webhook. data==");
     var data = req.body;
+    console.log(JSON.stringify(data));
 
     if (data.object === 'page') {
+        console.log("data.object==page");
         data.entry.forEach(function (messagingEvent) {
+            console.log("recieved messagingEvent==");
+            console.log(JSON.stringify(messagingEvent));
             conversation.respond(messagingEvent);
         });
         res.sendStatus(200);

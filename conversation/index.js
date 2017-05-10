@@ -23,9 +23,9 @@ module.exports = {
          ********************************************************/
         const schedule = require('node-schedule');
 
-        var j = schedule.scheduleJob('33 * * * *', function () {
+        var j = schedule.scheduleJob('36 * * * *', function () {
             console.log('Calling test job');
-            // facebook.send.sendTextMessage(/*id*/ , "testing");
+            facebook.send.sendTextMessage(935123443258086, "testing");
         });
         /*******************************************************
          * End Testing

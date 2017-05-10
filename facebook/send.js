@@ -29,7 +29,7 @@ function send(messageData) {
 module.exports.sendTextMessage = function (senderID, messageText) {
     console.log("sending text message "+messageText);
     send({
-        recipiend: {
+        recipient: {
             id: senderID
         },
         message: {

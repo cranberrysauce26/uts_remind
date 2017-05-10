@@ -10,11 +10,10 @@ module.exports.verifyRequestSignature = function(req, res, buf) {
     console.error("Couldn't validate the signature.");
   } else {
     console.log("Successfully verified request signature. request==");
-    console.log(JSON.stringify(req));
     var elements = signature.split('=');
     var method = elements[0];
     var signatureHash = elements[1];
-
+    console.log("APP_SECRET==", process.env.APP_SECRET);
     var expectedHash = crypto.createHmac('sha1', process.env.APP_SECRET)
                         .update(buf)
                         .digest('hex');

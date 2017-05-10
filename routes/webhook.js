@@ -6,7 +6,7 @@ var conversation = require('../conversation');
 
 router.get('/', function (req, res) {
     console.log("GET call to webhook");
-    if (req.query["hub.verify_token"] === process.env.VERIFY_TOKEN) {
+    if (req.query["hub.verify_token"] === process.env.VERIFY_TOKEN && req.query["hub.mode"]=="subscribe") {
         console.log("Verified webhook");
         res.status(200).send(req.query["hub.challenge"]);
     } else {

@@ -11,7 +11,7 @@ module.exports = function(event) {
     /***********************************
      * TESTING
      */
-    if (messageText = 'test') {
+    if (messageText === 'test') {
         facebook.send.sendGenericMessage(senderID);
     }
     /********************************** */

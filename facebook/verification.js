@@ -1,7 +1,6 @@
 'use strict';
 const crypto = require('crypto');
 module.exports.verifyRequestSignature = function(req, res, buf) {
-  console.log("verifying request signature");
   var signature = req.headers["x-hub-signature"];
 
   if (!signature) {
@@ -9,11 +8,9 @@ module.exports.verifyRequestSignature = function(req, res, buf) {
     // error.
     console.error("Couldn't validate the signature.");
   } else {
-    console.log("Successfully verified request signature. request==");
     var elements = signature.split('=');
     var method = elements[0];
     var signatureHash = elements[1];
-    console.log("APP_SECRET==", process.env.APP_SECRET);
     var expectedHash = crypto.createHmac('sha1', process.env.APP_SECRET)
                         .update(buf)
                         .digest('hex');

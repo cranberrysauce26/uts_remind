@@ -6,30 +6,22 @@ const recievedMessage = require('./recieved-message');
 const recievedPostback = require('./recieved-postback');
 
 module.exports = {
-    respond: function (messagingEvent) {
+    respond: function (pageEntry) {
+        
+        if (pageEntry.messaging) {
 
-        //See https://developers.facebook.com/docs/messenger-platform/webhook-reference 
-        console.log("responding to messagingEvent in conversation");
-
-        if (messagingEvent.messaging) {
-            console.log("recieved a message");
-            /*
-                messagingEvent.messaging is actually an array cuz according to facebook,
-                you might need to handle multiple calls at once. However, apparently 99% of the time
-                the array has only one element.
-            */
-            messagingEvent.messaging.forEach(function (message) {
-                recievedMessage(message);
+            pageEntry.messaging.forEach(function (messagingEvent) {
+                if (messagingEvent.message) {
+                    recievedMessage(messagingEvent);
+                } else if (messagingEvent.postback) {
+                    recievedPostback(messagingEvent);
+                } else {
+                     console.log("Webhook received unknown messagingEvent: ", messagingEvent);
+                }
             });
-        } else if (messagingEvent.postback) {
-            console.log("recieved a postback. messaginEvent is ");
-            console.log(JSON.stringify(messagingEvent));
-            console.log("doing nothing for now");
-            // messagingEvent.postback.forEach(function(postback) {
-            //     recievedPostback(postback);
-            // }); 
+
         } else {
-            console.log("Webhook received unknown messagingEvent: ", messagingEvent);
+            console.log("messagingEvent in conversation index contains no messaging parameter");
         }
     }
 }

@@ -6,7 +6,7 @@ module.exports = function(event) {
     var message = event.message;
     var messageText = message.text;
 
-    console.log("Received message for user "+senderID+" with message "+messageText);
+    console.log("Received message for user "+senderID+" with message '"+messageText+"'");
 
     /***********************************
      * TESTING
@@ -17,7 +17,7 @@ module.exports = function(event) {
     /********************************** */
 
     if (messageText) {
-        console.log("sending messageText to facebook");
+        console.log("sending message '"+messageText+"' to facebook");
         facebook.send.sendTextMessage(senderID, messageText);
     } else {
         console.log("messageText is null.");

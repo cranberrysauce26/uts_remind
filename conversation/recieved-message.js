@@ -8,6 +8,14 @@ module.exports = function(event) {
 
     console.log("Received message for user "+senderID+" with message "+messageText);
 
+    /***********************************
+     * TESTING
+     */
+    if (messageText = 'test') {
+        facebook.send.sendGenericMessage(senderID);
+    }
+    /********************************** */
+
     if (messageText) {
         console.log("sending messageText to facebook");
         facebook.send.sendTextMessage(senderID, messageText);

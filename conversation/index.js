@@ -11,14 +11,16 @@ module.exports = {
                 pageEntry.messaging.forEach(function (messagingEvent) {
                     console.log("recieved messaging event");
                     console.log(JSON.stringify(messagingEvent));
-                    if (messagingEvent.postback) {
-                        console.log("Recieved postback", messagingEvent.postback.payload);
-                        processer.processPostback[messagingEvent.postback.payload](messagingEvent.sender.id);
-
-                    } else if (messagingEvent.message) {
-
-                        processer.processInput(messagingEvent.sender.id, messagingEvent.message.text);
-
+                    if (messagingEvent.message) {
+                        if (messagingEvent.message.quick_reply) {
+                            if (messagingEvent.message.quick_reply.payload) {
+                                processer.processPostback[messagingEvent.postback.payload](messagingEvent.sender.id);
+                            } else {
+                                console.error("Recieved quick_reply with no payload");
+                            }
+                        } else {
+                            processer.processInput(messagingEvent.sender.id, messagingEvent.message.text);
+                        }
                     } else {
                         console.log("Webhook received unknown messagingEvent:", JSON.stringify(messagingEvent) );
                     }

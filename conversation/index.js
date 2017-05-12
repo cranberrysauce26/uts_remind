@@ -9,17 +9,18 @@ module.exports = {
             if (pageEntry.messaging) {
 
                 pageEntry.messaging.forEach(function (messagingEvent) {
-                    if (!messagingEvent.postback) {
-                        // recieved input
+                    console.log("recieved messaging event");
+                    console.log(JSON.stringify(messagingEvent));
+                    if (messagingEvent.postback) {
+                        console.log("Recieved postback", messagingEvent.postback.payload);
+                        processer.processPostback[messagingEvent.postback.payload](messagingEvent.sender.id);
+
+                    } else if (messagingEvent.message) {
+
                         processer.processInput(messagingEvent.sender.id, messagingEvent.message.text);
 
-                    } else if (messagingEvent.postback) {
-                        // recieved postback
-                        // processer.processPostback is an object with payloads as keys mapping to functions
-                        // The functions take sender ID as arguments
-                        processer.processPostback[messagingEvent.postback.payload](messagingEvent.sender.id);
                     } else {
-                        console.log("Webhook received unknown messagingEvent:", messagingEvent);
+                        console.log("Webhook received unknown messagingEvent:", JSON.stringify(messagingEvent) );
                     }
                 });
             } else {

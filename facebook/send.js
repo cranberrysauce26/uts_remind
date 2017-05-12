@@ -44,7 +44,7 @@ module.exports.sendTextMessage = function (senderID, messageText) {
 module.exports.sendTest(senderID) {
   var messageData = {
     "recipient": {
-      "id": "USER_ID"
+      "id": senderID
     },
     "message": {
       "text": "Pick a color:",

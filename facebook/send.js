@@ -41,7 +41,7 @@ module.exports.sendTextMessage = function (senderID, messageText) {
 /**************************************
  * TESTING
  */
-module.exports.sendTest(senderID) {
+module.exports.sendTest = function(senderID) {
   var messageData = {
     "recipient": {
       "id": senderID

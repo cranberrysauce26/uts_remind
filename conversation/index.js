@@ -9,7 +9,7 @@ module.exports = {
             if (pageEntry.messaging) {
 
                 pageEntry.messaging.forEach(function (messagingEvent) {
-                    if (messagingEvent.message) {
+                    if (!messagingEvent.postback) {
                         // recieved input
                         processer.processInput(messagingEvent.sender.id, messagingEvent.message.text);
 

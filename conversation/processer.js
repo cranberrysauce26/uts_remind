@@ -23,8 +23,10 @@ module.exports.processPostback = {};
 module.exports.processPostback.TEST = function(senderID) {
     console.log("Recieved test postback");
     facebook.send.sendTextMessage(senderID, "Please enter a random thought");
+    var tmp = module.exports.processInput;
     module.exports.processInput = function (senderID, text) {
         facebook.send.sendTextMessage(senderID, "Recieved your input!");
+        module.exports.processInput = tmp;
     }
 }
 

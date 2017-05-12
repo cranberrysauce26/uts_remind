@@ -11,9 +11,9 @@ module.exports = {
                 pageEntry.messaging.forEach(function (messagingEvent) {
                     console.log("recieved messaging event");
                     console.log(JSON.stringify(messagingEvent));
-                    if (messagingEvent.postback) {
-                        console.log("Recieved postback", messagingEvent.postback.payload);
-                        processer.processPostback[messagingEvent.postback.payload](messagingEvent.sender.id);
+                    if (messagingEvent.message.quick_reply.payload) {
+                        console.log("Recieved postback", messagingEvent.message.quick_reply.payload);
+                        processer.processPostback[messagingEvent.message.quick_reply.payload](messagingEvent.sender.id);
 
                     } else if (messagingEvent.message) {
 

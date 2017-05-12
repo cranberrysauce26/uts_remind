@@ -5,13 +5,14 @@ const facebook = require('../facebook');
 module.exports.processInput = function (senderID, text) {
     // Default function.
     if (text==='test') {
+        console.log("recieved input 'test'");
         var quickReplies = [
             {
                 "text": "Press me!",
                 "payload": "TEST"
             }
         ];
-        facebook.send.sendQuickReplies(senderID, "Press the buttons", quickReplies);
+        facebook.send.sendQuickReplies(senderID, "Press the button", quickReplies);
         return;
     }
     facebook.send.sendTextMessage(senderID, "Sorry, I am illiterate");

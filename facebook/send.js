@@ -47,6 +47,7 @@ module.exports.sendTextMessage = function (senderID, messageText) {
   }
 */
 module.exports.sendQuickReplies = function(senderID, message, quickReplies) {
+  console.log("sending quick reply");
   var messageData = {
     "recipient" : {
       "id": senderID
@@ -63,5 +64,7 @@ module.exports.sendQuickReplies = function(senderID, message, quickReplies) {
       "payload": quickReply.payload
     });
   })
+  console.log(messageData);
+  send(messageData);
 }
 

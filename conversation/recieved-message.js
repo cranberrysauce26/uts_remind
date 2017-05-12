@@ -13,6 +13,7 @@ module.exports = function(event) {
      */
     if (messageText === 'test') {
         facebook.send.sendTest(senderID);
+        return;
     }
     /********************************** */
 

@@ -14,7 +14,9 @@ module.exports = {
                     if (messagingEvent.message) {
                         if (messagingEvent.message.quick_reply) {
                             if (messagingEvent.message.quick_reply.payload) {
-                                processer.processPostback[messagingEvent.postback.payload](messagingEvent.sender.id);
+                                let payload = messagingEvent.message.quick_reply.payload;
+                                console.log("processing postback", payload)
+                                processer.processPostback[payload](messagingEvent.sender.id);
                             } else {
                                 console.error("Recieved quick_reply with no payload");
                             }

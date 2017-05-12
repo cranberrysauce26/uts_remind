@@ -38,31 +38,30 @@ module.exports.sendTextMessage = function (senderID, messageText) {
   });
 }
 
-/**************************************
- * TESTING
- */
-module.exports.sendTest = function(senderID) {
+/*
+  message is the prompt
+  quickReplies is an array of objects. Each object is like
+  {
+    text: "text_to_display",
+    "payload": "payload_to_call"
+  }
+*/
+module.exports.sendQuickReplies = function(senderID, message, quickReplies) {
   var messageData = {
-    "recipient": {
+    "recipient" : {
       "id": senderID
     },
     "message": {
-      "text": "Pick a color:",
-      "quick_replies": [
-        {
-          "content_type": "text",
-          "title": "Red",
-          "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED"
-        },
-        {
-          "content_type": "text",
-          "title": "Green",
-          "payload": "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
-        }
-      ]
-    }
+      "text": message,
+      "quick_replies": []
+    },
   };
-  send(messageData);
+  quickReplies.forEach(function(quickReply) {
+    messageData.message.quick_replies.push({
+      "content_type": "text",
+      "title": quickReply.text,
+      "payload": quickReply.payload
+    });
+  })
 }
 
-/***************************************** */

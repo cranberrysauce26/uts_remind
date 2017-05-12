@@ -17,10 +17,13 @@ router.post('/', function (req, res) {
     console.log(JSON.stringify(data));
 
     if (data.object === 'page') {
-        data.entry.forEach(function (pageEntry) {
-            conversation.respond(pageEntry);
-        });
-        res.sendStatus(200);
+        if (data.entry) {
+            conversation.respond(data.entry);
+            res.sendStatus(200);
+        } else {
+            console.error("post call to webhook does not have entry property");
+        }
+       
     }
 });
 

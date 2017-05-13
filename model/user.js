@@ -4,20 +4,20 @@ var driver = require('./driver');
 class User {
 
     constructor(id) {
-        console.log("constructor for user with id "+id);
+        console.log("constructor for user with id " + id);
         this.id = id;
         var session = driver.session();
         session
-            .run("CREATE (n {facebook_id:"+id+"}) RETURN n.facebook_id")
-            .then(function(result) {
-                console.log("DATABASE: In .then");
-                result.records.forEach(function(record) {
-                    console.log(record);
-                })
+            .run("CREATE (n {hello: 'SecondWorld'}) RETURN n.name")
+            .then(function (result) {
+                result.records.forEach(function (record) {
+                    console.log(record)
+                });
+
                 session.close();
             })
-            .catch(function(err) {
-                console.log(err);
+            .catch(function (error) {
+                console.log(error);
             });
     }
 

@@ -6,6 +6,7 @@ var Event = require('./event');
 class User {
 
     constructor(id) {
+        console.log("constructor for user with id "+id);
         this.id = id;
         var session = driver.session();
         session
@@ -23,7 +24,7 @@ class User {
 
     setName(name) {
         this.name = name;
-        console.log("some logic in here");
+        console.log("name");
     }
 
     save() {

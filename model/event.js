@@ -1,10 +1,7 @@
 'use strict';
 
-const
-    driver = require('./driver');
-    facebook = require('../facebook/facebook');
-    remind = require('./remind');
-    schedule = require('node-schedule');
+const driver = require('./driver');
+const schedule = require('node-schedule');
 
 /*
     CONVENTION: 

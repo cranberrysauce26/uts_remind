@@ -12,6 +12,7 @@ class User {
             .run('CREATE (usr:USER {id={idParam} }) RETURN usr', {idParam: id})
             .subscribe({
                 onCompleted: function() {
+                    console.log("Created new user");
                     session.close();
                 },
                 onError: function(err) {

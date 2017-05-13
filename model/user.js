@@ -1,8 +1,6 @@
 'use strict';
 var driver = require('./driver');
 
-var Event = require('./event');
-
 class User {
 
     constructor(id) {

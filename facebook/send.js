@@ -3,8 +3,6 @@
 const request = require('request');
 
 function send(messageData) {
-  console.log("In send with messageData==");
-  console.log(JSON.stringify(messageData));
   request({
     url: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
@@ -15,8 +13,6 @@ function send(messageData) {
       var recipientId = body.recipient_id;
       var messageId = body.message_id;
 
-      console.log("Successfully sent message with id %s to recipient %s",
-        messageId, recipientId);
     } else {
       console.error("Unable to send message.");
       // console.error(response);
@@ -27,7 +23,6 @@ function send(messageData) {
 
 
 module.exports.sendTextMessage = function (senderID, messageText) {
-  console.log("sending text message " + messageText);
   send({
     recipient: {
       id: senderID

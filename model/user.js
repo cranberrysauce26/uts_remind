@@ -10,6 +10,7 @@ class User {
         session
             .run("CREATE (n {facebook_id:"+id+"}) RETURN n.facebook_id")
             .then(function(result) {
+                console.log("DATABASE: In .then");
                 result.records.forEach(function(record) {
                     console.log(record);
                 })

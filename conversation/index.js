@@ -9,8 +9,7 @@ module.exports = {
             if (pageEntry.messaging) {
 
                 pageEntry.messaging.forEach(function (messagingEvent) {
-                    console.log("recieved messaging event");
-                    console.log(JSON.stringify(messagingEvent));
+                    
 
                     if (messagingEvent.postback) {
                         processer.processPostback[messagingEvent.postback.payload](messagingEvent.sender.id);
@@ -21,7 +20,6 @@ module.exports = {
                         if (messagingEvent.message.quick_reply) {
                             if (messagingEvent.message.quick_reply.payload) {
                                 var payload = messagingEvent.message.quick_reply.payload;
-                                console.log("processing postback", payload)
                                 processer.processPostback[payload](messagingEvent.sender.id);
                             } else {
                                 console.error("Recieved quick_reply with no payload");

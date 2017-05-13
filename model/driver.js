@@ -2,7 +2,7 @@
 
 const neo4j = require('neo4j-driver').v1;
 
-var driver = neo4j.driver(process.env.GRAPHENEDB_BOLT_URL, neo4j.auth.basic(process.env.GRAPHENEDB_BOLT_USER, GRAPHENEDB_BOLT_PASSWORD));
+var driver = neo4j.driver(process.env.GRAPHENEDB_BOLT_URL, neo4j.auth.basic(process.env.GRAPHENEDB_BOLT_USER, process.env.GRAPHENEDB_BOLT_PASSWORD));
 
 driver.onCompleted = function() {
     console.log("Succesfully configured graphene db driver");

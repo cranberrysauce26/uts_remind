@@ -12,19 +12,4 @@ driver.onError = function(error) {
   console.log('Graphene db driver instantiation failed', error);
 };
 
-var session = driver.session();
-console.log("Created driver session");
-session
-    .run("CREATE (n {hello: 'World'}) RETURN n.name")
-    .then(function(result) {
-        result.records.forEach(function(record) {
-            console.log(record)
-        });
-
-        session.close();
-    })
-    .catch(function(error) {
-        console.log(error);
-    });
-
 module.exports = driver;

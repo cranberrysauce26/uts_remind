@@ -3,11 +3,6 @@
 const driver = require('./driver');
 const schedule = require('node-schedule');
 
-/*
-    CONVENTION: 
-    For private properties or methods, place an underscore under the name
-    For example, _privateMethod() {return true;}
-*/
 module.exports = class Event {
     constructor(eventName) {
         this.name = eventName;

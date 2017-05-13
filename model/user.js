@@ -8,15 +8,15 @@ class User {
         this.id = id;
         var session = driver.session();
         session
-            .run('CREATE (usr:USER {id={idParam} }) RETURN usr', {idParam: id})
-            .subscribe({
-                onCompleted: function() {
-                    console.log("Created new user");
-                    session.close();
-                },
-                onError: function(err) {
-                    console.error(err);
-                }
+            .run("CREATE (n {facebook_id:"+id+"}) RETURN n.facebook_id")
+            .then(function(result) {
+                result.records.forEach(function(record) {
+                    console.log(record);
+                })
+                session.close();
+            })
+            .catch(function(err) {
+                console.log(err);
             });
     }
 

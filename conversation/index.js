@@ -20,7 +20,7 @@ module.exports = {
                     if (messagingEvent.message) {
                         if (messagingEvent.message.quick_reply) {
                             if (messagingEvent.message.quick_reply.payload) {
-                                let payload = messagingEvent.message.quick_reply.payload;
+                                var payload = messagingEvent.message.quick_reply.payload;
                                 console.log("processing postback", payload)
                                 processer.processPostback[payload](messagingEvent.sender.id);
                             } else {

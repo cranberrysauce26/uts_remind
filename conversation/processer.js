@@ -1,37 +1,35 @@
 'use strict';
 
 const facebook = require('../facebook');
+const User = require('../model/user');
+
+var user;
 
 module.exports.processInput = function (senderID, text) {
     // Default function.
-    if (text==='test') {
-        console.log("recieved input 'test'");
-        var quickReplies = [
-            {
-                "text": "Press me!",
-                "payload": "TEST"
-            }
-        ];
-        facebook.send.sendQuickReplies(senderID, "Press the button", quickReplies);
-        return;
-    }
     facebook.send.sendTextMessage(senderID, "Sorry, I am illiterate");
 }
 
 module.exports.processPostback = {};
 
-module.exports.processPostback.TEST = function(senderID) {
-    console.log("Recieved test postback");
-    facebook.send.sendTextMessage(senderID, "Please enter a random thought");
+module.exports.processPostback.GET_STARTED = function(senderID) {
+    console.log("New user with id", senderID);
+
+    facebook.send.sendTextMessage(senderID, "Welcome to UTS Remind");
+    facebook.send.sendTextMessage(senderID, "Pleae enter a username to get started");
+
+    user = new User(senderID);
+
+    setProcessInput(function(senderID, text) {
+        // text is the name.
+        user.setName(text);        
+    });
+}
+    
+function setProcessInput(target) {
     var tmp = module.exports.processInput;
-    module.exports.processInput = function (senderID, text) {
-        facebook.send.sendTextMessage(senderID, "Recieved your input!");
+    module.exports.processInput = function(senderID, text) {
+        target(senderID, text);
         module.exports.processInput = tmp;
     }
 }
-
-module.exports.processPostback.GET_STARTED = function(senderID) {
-    console.log("Getting started!");
-    facebook.send.sendTextMessage(senderID, "You're getting started!");
-}
-    

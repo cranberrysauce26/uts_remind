@@ -11,6 +11,12 @@ module.exports = {
                 pageEntry.messaging.forEach(function (messagingEvent) {
                     console.log("recieved messaging event");
                     console.log(JSON.stringify(messagingEvent));
+
+                    if (messagingEvent.postback) {
+                        processer.processPostback[messagingEvent.postback.payload](messagingEvent.sender.id);
+                        return;
+                    }
+                    
                     if (messagingEvent.message) {
                         if (messagingEvent.message.quick_reply) {
                             if (messagingEvent.message.quick_reply.payload) {
@@ -20,15 +26,17 @@ module.exports = {
                             } else {
                                 console.error("Recieved quick_reply with no payload");
                             }
-                        } else {
+                        } else if (messagingEvent.message.text){
                             processer.processInput(messagingEvent.sender.id, messagingEvent.message.text);
+                        } else {
+                            console.error("Webhook recieved messagingEvent.message with unknown data:", JSON.stringify(messagingEvent));
                         }
                     } else {
-                        console.log("Webhook received unknown messagingEvent:", JSON.stringify(messagingEvent) );
+                        console.error("Webhook received unknown messagingEvent:", JSON.stringify(messagingEvent) );
                     }
                 });
             } else {
-                console.log("messagingEvent in conversation index contains no messaging parameter");
+                console.error("pageEntry in conversation contains no messaging parameter");
             }
         })
     }

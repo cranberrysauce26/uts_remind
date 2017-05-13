@@ -30,4 +30,8 @@ module.exports.processPostback.TEST = function(senderID) {
     }
 }
 
+module.exports.processPostback.GET_STARTED = function(senderID) {
+    console.log("Getting started!");
+    facebook.send.sendTextMessage(senderID, "You're getting started!");
+}
     

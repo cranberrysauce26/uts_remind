@@ -10,7 +10,7 @@ module.exports = class User {
         var session = driver.session();
 
         session
-            .run("CREATE (n {hello: 'SecondWorld'}) RETURN n.hello")
+            .run("CREATE (n:User {facebook_id:"+id+"}) RETURN n.id")
             .then(function (result) {
                 result.records.forEach(function (record) {
                     console.log(record)
@@ -24,8 +24,20 @@ module.exports = class User {
     }
 
     setName(name) {
-        this.name = name;
-        console.log("name");
+        console.log("in name");
+        var session = driver.session();
+        session
+            .run("MATCH (p:User) WHERE p.facebook_id="+this.id+" SET p.name="+name+" RETURN p")
+            .then(function (result) {
+                result.records.forEach(function (record) {
+                    console.log(record)
+                });
+
+                session.close();
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     save() {

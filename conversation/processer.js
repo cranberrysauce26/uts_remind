@@ -7,7 +7,7 @@ var user;
 
 module.exports.processInput = function (senderID, text) {
     // Default function.
-    facebook.send.sendTextMessage(senderID, "Sorry, I am illiterate");
+    facebook.send.sendTextMessages(senderID, ["Sorry, I am illiterate"]);
 }
 
 module.exports.processPostback = {};
@@ -15,7 +15,7 @@ module.exports.processPostback = {};
 module.exports.processPostback.GET_STARTED = function(senderID) {
     console.log("New user with id", senderID);
 
-    facebook.send.sendTextMessage(senderID, ["Welcome to UTS Remind", "Please enter a username to get started"]);
+    facebook.send.sendTextMessages(senderID, ["Welcome to UTS Remind", "Please enter a username to get started"]);
 
     user = new User(senderID);
 

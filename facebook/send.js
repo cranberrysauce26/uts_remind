@@ -32,7 +32,7 @@ module.exports.sendTextMessages = function (senderID, messageTextArray) {
         id: senderID
       },
       message: {
-        text: messageText
+        text: text
       }
     });
   });

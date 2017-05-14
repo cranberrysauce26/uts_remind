@@ -26,7 +26,7 @@ function send(messageDataArray) {
 
 module.exports.sendTextMessages = function (senderID, messageTextArray) {
   var messageDataArray = [];
-  messageDataArray.forEach(function (text) {
+  messageTextArray.forEach(function (text) {
     messageDataArray.push({
       recipient: {
         id: senderID

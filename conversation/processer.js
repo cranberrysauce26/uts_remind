@@ -15,8 +15,7 @@ module.exports.processPostback = {};
 module.exports.processPostback.GET_STARTED = function(senderID) {
     console.log("New user with id", senderID);
 
-    facebook.send.sendTextMessage(senderID, "Welcome to UTS Remind");
-    facebook.send.sendTextMessage(senderID, "Please enter a username to get started");
+    facebook.send.sendTextMessage(senderID, ["Welcome to UTS Remind", "Please enter a username to get started"]);
 
     user = new User(senderID);
 

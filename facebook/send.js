@@ -2,35 +2,41 @@
 
 const request = require('request');
 
-function send(messageData) {
+function send(messageDataArray) {
+  if (messageDataArray.length == 0) {
+    return;
+  }
+
   request({
     url: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
     method: 'POST',
-    json: messageData
+    json: messageDataArray[0]
   }, function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      var recipientId = body.recipient_id;
-      var messageId = body.message_id;
-
+      messageDataArray.shift();
+      send(messageDataArray);
     } else {
       console.error("Unable to send message.");
-      // console.error(response);
       console.error(error);
     }
   });
 }
 
 
-module.exports.sendTextMessage = function (senderID, messageText) {
-  send({
-    recipient: {
-      id: senderID
-    },
-    message: {
-      text: messageText
-    }
+module.exports.sendTextMessages = function (senderID, messageTextArray) {
+  var messageDataArray = [];
+  messageDataArray.forEach(function (text) {
+    messageDataArray.push({
+      recipient: {
+        id: senderID
+      },
+      message: {
+        text: messageText
+      }
+    });
   });
+  send(messageDataArray);
 }
 
 /*
@@ -41,10 +47,10 @@ module.exports.sendTextMessage = function (senderID, messageText) {
     "payload": "payload_to_call"
   }
 */
-module.exports.sendQuickReplies = function(senderID, message, quickReplies) {
+module.exports.sendQuickReplies = function (senderID, message, quickReplies) {
   console.log("sending quick reply");
   var messageData = {
-    "recipient" : {
+    "recipient": {
       "id": senderID
     },
     "message": {
@@ -52,7 +58,7 @@ module.exports.sendQuickReplies = function(senderID, message, quickReplies) {
       "quick_replies": []
     },
   };
-  quickReplies.forEach(function(quickReply) {
+  quickReplies.forEach(function (quickReply) {
     messageData.message.quick_replies.push({
       "content_type": "text",
       "title": quickReply.text,

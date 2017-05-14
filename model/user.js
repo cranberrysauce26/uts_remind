@@ -1,15 +1,12 @@
 'use strict';
-// var driver = require('./driver');
+var driver = require('./driver');
 
 
-class User {
+module.exports = class User {
 
     constructor(id) {
         console.log("constructor for user with id " + id);
         this.id = id;
-        const neo4j = require('neo4j-driver').v1;
-        var driver = neo4j.driver(process.env.GRAPHENEDB_BOLT_URL, neo4j.auth.basic(process.env.GRAPHENEDB_BOLT_USER, process.env.GRAPHENEDB_BOLT_PASSWORD));
-
         var session = driver.session();
 
         session

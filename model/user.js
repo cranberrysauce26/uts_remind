@@ -27,7 +27,7 @@ module.exports = class User {
         console.log("in name");
         var session = driver.session();
         session
-            .run("MATCH (p:User) WHERE p.facebook_id="+this.id+" SET p.name="+name+" RETURN p")
+            .run("MATCH (p:User) WHERE p.facebook_id="+this.id+" SET p.name='"+name+"' RETURN p")
             .then(function (result) {
                 result.records.forEach(function (record) {
                     console.log(record)

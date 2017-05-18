@@ -3,11 +3,11 @@
 const send = require('../facebook/send');
 const user = require('../model/user');
 
-function defaultFailure() {
-    return () => {
+function defaultFailure(senderID) {
+    return (reason) => {
         facebook.send.sendTextMessages(
             senderID,
-            ["An unknown error occured. Please try again later"]
+            [reason]
         );
     }
 }

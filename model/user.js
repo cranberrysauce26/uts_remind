@@ -16,7 +16,7 @@ module.exports =
                 success();
             })
             .catch(function (error) {
-                failure();
+                failure("A database query error occured");
             });
     },
 
@@ -34,7 +34,7 @@ module.exports =
                 success();
             })
             .catch(function (error) {
-               failure();
+               failure("A database query error occured");
             });
     },
 

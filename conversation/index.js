@@ -1,7 +1,8 @@
 'use strict';
 
-var input = require('./input');
-var postback = require('./postback');
+const input = require('./input');
+const postback = require('./postback');
+const user = require('../model/user');
 
 module.exports = {
     respond: function (dataEntry) {

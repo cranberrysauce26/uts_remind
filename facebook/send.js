@@ -24,17 +24,21 @@ function send(messageDataArray) {
 }
 
 
-module.exports.sendTextMessages = function (senderID, messageTextArray) {
+module.exports.sendTextMessages = function (senderID, messageTextArray, meta) {
   var messageDataArray = [];
   messageTextArray.forEach(function (text) {
-    messageDataArray.push({
+    var messageData = {
       recipient: {
         id: senderID
       },
       message: {
         text: text
       }
-    });
+    };
+    if (meta !== undefined) {
+      messageData.message.metadata = meta;
+    }
+    messageDataArray.push(messageData);
   });
   send(messageDataArray);
 }

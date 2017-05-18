@@ -2,11 +2,10 @@
 var driver = require('./driver');
 
 
-module.exports = class User {
-
-    constructor(id) {
+module.exports = 
+{
+    createNewUser : function(id) {
         console.log("constructor for user with id " + id);
-        this.id = id;
         var session = driver.session();
 
         session
@@ -17,51 +16,43 @@ module.exports = class User {
                 });
 
                 session.close();
+                return true;
             })
             .catch(function (error) {
-                console.log(error);
+                return false;
             });
-    }
+    },
 
-    setName(name) {
+    setName : function(id, name) {
         console.log("in name");
         var session = driver.session();
         session
-            .run("MATCH (p:User) WHERE p.facebook_id="+this.id+" SET p.name='"+name+"' RETURN p")
+            .run("MATCH (p:User) WHERE p.facebook_id="+id+" SET p.name='"+name+"' RETURN p")
             .then(function (result) {
                 result.records.forEach(function (record) {
                     console.log(record)
                 });
 
                 session.close();
+                return true;
             })
             .catch(function (error) {
-                console.log(error);
+                return false;
             });
-    }
+    },
 
-    save() {
-
-    }
-
-    subscribeToEvent(eventName) {
-        var event = new Event(eventName);
-        event.addSubscriber(this.id);
-    }
-
-    isNewUser() {
-
-    }
-
-    configureDefaultSettings() {
-
-    }
-
-    unsubscribe() {
-
-    }
-
-    getAllFutureEvents() {
-
+    futureEvents : function(id) {
+        var seession = driver.session();
+        var futureEvents = [];
+        return;
+        // session 
+        //     .run("match all events that remind user with id")
+        //     .then(function (result) {
+                
+        //     })
+        //     .catch(function (error) {
+        //         return false;
+        //     });
+       // You might have to do this twice. For groups right?
     }
 }

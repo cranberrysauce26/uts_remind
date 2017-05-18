@@ -1,6 +1,7 @@
 'use strict';
 
-var processer = require('./processer');
+var input = require('./input');
+var postback = require('./postback'); 
 
 module.exports = {
     respond: function (dataEntry) {
@@ -10,32 +11,39 @@ module.exports = {
 
                 pageEntry.messaging.forEach(function (messagingEvent) {
                     
+                    const id = messagingEvent.sender.id;
 
-                    if (messagingEvent.postback) {
-                        processer.processPostback[messagingEvent.postback.payload](messagingEvent.sender.id);
+                    if (messagingEvent.hasOwnProperty('postback')) {
+                        postback[messagingEvent.postback.payload](id);
                         return;
                     }
-                    
-                    if (messagingEvent.message) {
-                        if (messagingEvent.message.quick_reply) {
-                            if (messagingEvent.message.quick_reply.payload) {
-                                var payload = messagingEvent.message.quick_reply.payload;
-                                processer.processPostback[payload](messagingEvent.sender.id);
-                            } else {
-                                console.error("Recieved quick_reply with no payload");
-                            }
-                        } else if (messagingEvent.message.text){
-                            processer.processInput(messagingEvent.sender.id, messagingEvent.message.text);
-                        } else {
-                            console.error("Webhook recieved messagingEvent.message with unknown data:", JSON.stringify(messagingEvent));
-                        }
-                    } else {
-                        console.error("Webhook received unknown messagingEvent:", JSON.stringify(messagingEvent) );
+
+                    if (!messagingEvent.hasOwnProperty('message')) {
+                        console.error("messaging event contains no message or postback: ");
+                        console.error(messagingEvent);
+                        return;
                     }
-                });
-            } else {
-                console.error("pageEntry in conversation contains no messaging parameter");
-            }
+
+                    const message = messagingEvent.message;
+
+                    if (message.hasOwnProperty('quick_reply')) {
+                        var payload = message.quick_reply.payload;
+                        postback[payload](senderid);
+                        return;
+                    }
+
+                    const text = message.text;
+
+                    if (message.is_echo) {
+                        var metadata = message.metadata;
+                        input[metadata](id, text);
+                        return;
+                    }
+
+                    input.DEFAULT(id, text);
+
+                    return;
+
         })
     }
 }

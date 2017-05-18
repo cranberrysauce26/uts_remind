@@ -1,6 +1,6 @@
 'use strict';
 
-const facebook = require('./facebook');
+const send = require('../facebook/send');
 const user = require('../model/user');
 
 
@@ -11,14 +11,14 @@ module.exports = {
         user
             .createNewUser(senderID)
             .then(function (val) {
-                facebook.send.sendTextMessages(
+                send.sendTextMessages(
                     senderID,
                     ["Welcome to UTS Remind", "Please enter a username to get started"],
                     "SET_NAME"
                 );
             })
             .catch(function(reason) {
-                facebook.send.sendTextMessages(
+                send.sendTextMessages(
                     senderID,
                     [reason]
                 );
@@ -35,7 +35,7 @@ module.exports = {
 
         }
 
-        facebook.send.sendTextMessages(
+        send.sendTextMessages(
             senderID,
             ["What's the name of your event?"],
             "NAME_EVENT"
@@ -44,6 +44,6 @@ module.exports = {
     },
 
     SCHEDULE_EVENT: function(senderID) {
-        
+
     }
 }

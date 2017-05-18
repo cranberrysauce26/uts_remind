@@ -11,9 +11,7 @@ module.exports =
         session
             .run("CREATE (n:User {facebook_id:"+id+"}) RETURN n.id")
             .then( (result) => {
-                result.records.forEach(function (record) {
-                    console.log(record)
-                });
+                console.log("successfully created user");
 
                 session.close();
                 return new Promise((resolve, reject) => {

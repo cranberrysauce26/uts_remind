@@ -11,6 +11,7 @@ module.exports = {
         user
             .createNewUser(senderID)
             .then(function (val) {
+                console.log("In .then after creating user. Sending message now");
                 send.sendTextMessages(
                     senderID,
                     ["Welcome to UTS Remind", "Please enter a username to get started"],

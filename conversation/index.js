@@ -34,16 +34,11 @@ module.exports = {
                     return;
                 }
 
-                const text = message.text;
-
-                if (message.is_echo) {
-                    var metadata = message.metadata;
-                    input[metadata](id, text);
-                    return;
-                }
-
-                input.DEFAULT(id, text);
-
+                user
+                    .getInputState(id)
+                    .then( (state) => {
+                        input[state](id, message.text);
+                    });
             });
         });
     }

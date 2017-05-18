@@ -24,7 +24,7 @@ function send(messageDataArray) {
 }
 
 
-module.exports.sendTextMessages = function (senderID, messageTextArray, meta) {
+module.exports.sendTextMessages = function (senderID, messageTextArray) {
   console.log("in facecbook.send.sendTextMessages with");
   var messageDataArray = [];
   messageTextArray.forEach(function (text) {
@@ -33,8 +33,7 @@ module.exports.sendTextMessages = function (senderID, messageTextArray, meta) {
         id: senderID
       },
       message: {
-        text: text,
-        metadata: meta
+        text: text
       }
     };
    

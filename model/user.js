@@ -8,18 +8,39 @@ module.exports =
         console.log("constructor for user with id " + id);
         var session = driver.session();
 
+        var out = {};
+
+        session
+            .run("MATCH (n:User {facebook_id:"+id+"}) RETURN n.id")
+            .then( (result) => {
+                if (result.records.length > 0) {
+                    return new Promise( (resolve, reject) => {
+                        reject("You have already registered with UTS Remind");
+                    })
+                }
+            })
+            .catch(function (error) {
+                return new Promise( (resolve, reject) => {
+                    reject("Sorry, an unknown error occured. Please try again later");
+                });
+            });
+        
         session
             .run("CREATE (n:User {facebook_id:"+id+"}) RETURN n.id")
-            .then(function (result) {
+            .then( (result) => {
                 result.records.forEach(function (record) {
                     console.log(record)
                 });
 
                 session.close();
-                return true;
+                return new Promise((resolve, reject) => {
+                    resolve();
+                });
             })
             .catch(function (error) {
-                return false;
+                return new Promise( (resolve, reject) => {
+                    reject("Sorry, an unknown error occured. Please try again later");
+                });
             });
     },
 
@@ -34,10 +55,14 @@ module.exports =
                 });
 
                 session.close();
-                return true;
+                return new Promise((resolve, reject) => {
+                    resolve();
+                });
             })
             .catch(function (error) {
-                return false;
+               return new Promise( (resolve, reject) => {
+                    reject("Sorry, an unknown error occured. Please try again later");
+                });
             });
     },
 

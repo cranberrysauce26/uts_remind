@@ -3,27 +3,29 @@
 const send = require('../facebook/send');
 const user = require('../model/user');
 
+function defaultFailure() {
+    return () => {
+        facebook.send.sendTextMessages(
+            senderID,
+            ["An unknown error occured. Please try again later"]
+        );
+    }
+}
+
 
 module.exports = {
     GET_STARTED: function (senderID) {
         console.log("New user with id", senderID);
 
-        user
-            .createNewUser(senderID)
-            .then(function (val) {
-                console.log("In .then after creating user. Sending message now");
-                send.sendTextMessages(
-                    senderID,
-                    ["Welcome to UTS Remind", "Please enter a username to get started"],
-                    "SET_NAME"
-                );
-            })
-            .catch(function(reason) {
-                send.sendTextMessages(
-                    senderID,
-                    [reason]
-                );
-            })
+        function success() {
+            send.sendTextMessages(
+                senderID,
+                ["Welcome to UTS Remind", "Please enter a username to get started"],
+                "SET_NAME"
+            );
+        }
+
+        user.createNewUser(senderID, success, defaultFailure(senderID) );
     },
 
     LIST_FUTURE_EVENTS_FOR_USER: function (senderID) {
@@ -44,7 +46,7 @@ module.exports = {
 
     },
 
-    SCHEDULE_EVENT: function(senderID) {
+    SCHEDULE_EVENT: function (senderID) {
 
     }
 }

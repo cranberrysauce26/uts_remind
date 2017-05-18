@@ -4,6 +4,16 @@ const send = require('../facebook/send');
 const user = require('../model/user');
 const event = require('../model/event');
 
+function defaultFailure() {
+    return () => {
+        facebook.send.sendTextMessages(
+            senderID,
+            ["An unknown error occured. Please try again later"]
+        );
+    }
+}
+
+
 module.exports = {
 
     DEFAULT: function (senderID, text) {
@@ -11,46 +21,43 @@ module.exports = {
     },
 
     SET_NAME: function (senderID, text) {
-        user
-            .setName(senderID, text)
-            .then((val) => {
-                send.sendTextMessages(senderId, ["Recorded!"]);
-            })
-            .catch( sendError(senderID) );
+        function success() {
+            send.sendTextMessages(senderId, ["Recorded!"]);
+        }
+        user.setName(senderID, text, success, defaultFailure(senderID));
     },
 
     NAME_EVENT: function (senderID, text) {
-        event
-            .create(senderID, text)
-            .then((val) => {
-                send.sendTextMessages(
-                    senderID,
-                    ["When do you want people to be reminded?"],
-                    "SET_TIME_FOR_EVENT"
-                );
-            })
-            .catch( sendError(senderID) );
+
+        function success() {
+            send.sendTextMessages(
+                senderID,
+                ["When do you want people to be reminded?"],
+                "SET_TIME_FOR_EVENT"
+            );
+        }
+
+        event.create(senderID, text, success, defaultFailure(senderID));
     },
 
     SET_TIME_FOR_EVENT: function (senderID, text) {
-        event
-            .setEventStartTime(senderID, text)
-            .then((val) => {
-                send.sendTextMessages(
-                    senderID,
-                    ["Please add a description that includes the start time, location and any other details"],
-                    "SET_DESCRIPTION_FOR_EVENT"
-                );
-            })
-            .catch( sendError(senderID) );
+
+        function success() {
+            send.sendTextMessages(
+                senderID,
+                ["Please add a description that includes the start time, location and any other details"],
+                "SET_DESCRIPTION_FOR_EVENT"
+            );
+        }
+        event.setEventStartTime(senderID, text, success, defaultFailure(senderID) );
     },
 
-    SET_DESCRIPTION_FOR_EVENT: function(senderID, text) {
+    SET_DESCRIPTION_FOR_EVENT: function (senderID, text) {
         event
             .setEventDescription(senderID, text)
-            .then( (val) => {
+            .then((val) => {
                 send.sendQuickReplies(
-                    senderID, 
+                    senderID,
                     "Confirm event!",
                     [
                         {
@@ -64,15 +71,7 @@ module.exports = {
                     ]
                 );
             })
-            .catch( sendError(senderID) );
+            .catch(sendError(senderID));
     }
 }
 
-function sendError(senderID) {
-    return (reason) => {
-        facebook.send.sendTextMessages(
-            senderID,
-            [reason]
-        );
-    }
-}

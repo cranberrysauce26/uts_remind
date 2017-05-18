@@ -4,7 +4,7 @@ var driver = require('./driver');
 
 module.exports = 
 {
-    createNewUser : function(id) {
+    createNewUser : function(id, success, failure) {
         console.log("constructor for user with id " + id);
         var session = driver.session();
 
@@ -12,20 +12,15 @@ module.exports =
             .run("CREATE (n:User {facebook_id:"+id+"}) RETURN n.id")
             .then( (result) => {
                 console.log("successfully created user");
-
                 session.close();
-                return new Promise((resolve, reject) => {
-                    resolve();
-                });
+                success();
             })
             .catch(function (error) {
-                return new Promise( (resolve, reject) => {
-                    reject("Sorry, an unknown error occured. Please try again later");
-                });
+                failure();
             });
     },
 
-    setName : function(id, name) {
+    setName : function(id, name, success, failure) {
         console.log("in name");
         var session = driver.session();
         session
@@ -36,19 +31,14 @@ module.exports =
                 });
 
                 session.close();
-                return new Promise((resolve, reject) => {
-                    resolve();
-                });
+                success();
             })
             .catch(function (error) {
-               return new Promise( (resolve, reject) => {
-                    reject("Sorry, an unknown error occured. Please try again later");
-                });
+               failure();
             });
     },
 
     futureEvents : function(id) {
-        var seession = driver.session();
         var futureEvents = [];
         return;
         // session 

@@ -33,7 +33,7 @@ module.exports = {
             ["What's the name of your event?"]
         );
 
-        input.setInputState(senderID, 'SET_NAME_FOR_EVENT').catch(defaultFailure(senderID));
+        user.setInputState(senderID, 'SET_NAME_FOR_EVENT').catch(defaultFailure(senderID));
     },
 
     SCHEDULE_EVENT: function (senderID) {

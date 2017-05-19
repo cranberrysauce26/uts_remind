@@ -17,7 +17,7 @@ module.exports = {
                 const id = messagingEvent.sender.id;
 
                 if (messagingEvent.hasOwnProperty('postback')) {
-                    postback[messagingEvent.postback.payload](id);
+                    postback(id, messagingEvent.postback.payload);
                     return;
                 }
 

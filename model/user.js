@@ -51,14 +51,18 @@ module.exports =
     },
 
     getInputState : (id) => {
+        console.log("In getInputState");
         const session = driver.session();
         return session
             .run(`MATCH (p:User) WHERE p.facebook_id=${id} RETURN p.input_state AS inputState`)
             .then( (result) => {
+                const inputState = result.record[0].get('inputState');
+                console.log("successfully queried database. returning", inputState);
                 session.close();
-                return result.record[0].get('inputState');
+                return inputState;
             })
             .catch( () => {
+                console.log("error querying database. returning DEFAULT");
                 return new Promise( (resolve) => {
                     resolve("DEFAULT");
                 });

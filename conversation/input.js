@@ -15,8 +15,8 @@ module.exports = {
     SET_NAME: function (senderID, text) {
         user
             .setName(senderID, text)
-            .then(() => {
-                send.sendTextMessages(senderId, ["Recorded!"]);
+            .then( () => {
+                send.sendTextMessages(senderID, ["Recorded!"]);
             })
             .catch(defaultFailure(senderID));
     },

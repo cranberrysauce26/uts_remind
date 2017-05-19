@@ -13,9 +13,11 @@ module.exports = {
     },
 
     SET_NAME: function (senderID, text) {
+        console.log("In SET_NAME function input.js");
         user
             .setName(senderID, text)
             .then( () => {
+                console.log("In .then set_name input.js");
                 send.sendTextMessages(senderID, ["Recorded!"]);
             })
             .catch(defaultFailure(senderID));

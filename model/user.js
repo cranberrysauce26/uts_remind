@@ -27,6 +27,7 @@ module.exports =
         return session
             .run(`MATCH (p:User) WHERE p.facebook_id=${id} SET p.name='${name}' RETURN p`)
             .then( () => {
+                console.log("succesfully set name");
                 session.close();
             })
             .catch( () => {

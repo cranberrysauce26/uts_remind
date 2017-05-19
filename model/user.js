@@ -9,6 +9,7 @@ module.exports =
             const session = driver.session();
             return new Promise( (resolve, reject) => {
                 query.userInfo(id, "first_name,last_name,timezone", (q) => {
+                    console.log("In callback. q is", q);
                     if (q === null) {
                         console.log(`A facebook error occured when querying userInfo for user ${id}.`);
                         reject("A facebook error occured");
@@ -20,8 +21,8 @@ module.exports =
                             session.close();
                             resolve();
                         })
-                        .catch(() => {
-                            console.log(`Database error creating user with id ${id}`);
+                        .catch((err) => {
+                            console.log(`Database error creating user with id ${id}`, err);
                             reject("A database error occured");
                         });
                 })

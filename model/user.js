@@ -61,8 +61,8 @@ module.exports =
                 session.close();
                 return inputState;
             })
-            .catch( () => {
-                console.log("error querying database. returning DEFAULT");
+            .catch( (error) => {
+                console.log("error querying database", error);
                 return new Promise( (resolve) => {
                     resolve("DEFAULT");
                 });

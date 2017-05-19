@@ -6,7 +6,11 @@ const event = require('../model/event');
 
 const defaultFailure = require('./default_failure.js');
 
-module.exports = {
+module.exports = function(senderID, payload) {
+    postbacks[payload](senderID);
+}
+
+const postbacks = {
     GET_STARTED: function (senderID) {
         console.log("New user with id", senderID);
         user

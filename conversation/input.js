@@ -6,7 +6,24 @@ const event = require('../model/event');
 
 const defaultFailure = require('./default_failure');
 
-module.exports = {
+function formatStringQuotes(text) {
+    var _text = '';
+    for (let i = 0; i < text.length; i++) {
+        let char = text[i];
+        if (char==='\'' || char==="\"") {
+            _text += "\\"+char;
+        } else {
+            _text += char;
+        }
+    }
+    return _text;
+}
+
+module.exports = function (senderID, text, state) {
+    inputs[state](senderID, formatStringQuotes(text) );
+}
+
+const inputs = {
 
     DEFAULT: function (senderID, text) {
         if (text==='add event') {
@@ -20,18 +37,6 @@ module.exports = {
             return;
         }
         send.sendTextMessages(senderID, ["Sorry I am illiterate"]);
-    },
-
-    SET_NAME: function (senderID, text) {
-        console.log("In SET_NAME function input.js");
-        user
-            .setName(senderID, text)
-            .then( () => {
-                console.log("In .then set_name input.js");
-                send.sendTextMessages(senderID, ["Recorded!"]);
-                user.setInputState(senderID, 'DEFAULT').catch(defaultFailure(senderID));
-            })
-            .catch(defaultFailure(senderID));
     },
 
     SET_NAME_FOR_EVENT: function (senderID, text) {

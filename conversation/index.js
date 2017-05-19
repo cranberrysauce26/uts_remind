@@ -31,7 +31,7 @@ module.exports = {
 
                 if (message.hasOwnProperty('quick_reply')) {
                     var payload = message.quick_reply.payload;
-                    postback[payload](id);
+                    postback(id, payload);
                     return;
                 }
 

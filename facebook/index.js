@@ -1,6 +1,8 @@
 'use strict';
-var send = require('./send');
-var verification = require('./verification');
+const send = require('./send');
+const verification = require('./verification');
+const query = require('./query');
 
 module.exports.send = send;
 module.exports.verification = verification;
+module.exports.query = query;

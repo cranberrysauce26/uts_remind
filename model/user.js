@@ -56,7 +56,7 @@ module.exports =
         return session
             .run(`MATCH (p:User) WHERE p.facebook_id=${id} RETURN p.input_state AS inputState`)
             .then( (result) => {
-                const inputState = result.record[0].get('inputState');
+                const inputState = result.records[0].get('inputState');
                 console.log("successfully queried database. returning", inputState);
                 session.close();
                 return inputState;

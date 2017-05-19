@@ -8,7 +8,7 @@ module.exports =
         const session = driver.session();
 
         return session
-            .run(`CREATE (n:User {facebook_id: ${id}, input_state: 'DEFAULT') RETURN n`)
+            .run(`CREATE (n:User {facebook_id: ${id}, input_state: 'DEFAULT'}) RETURN n`)
             .then( () => {
                 console.log("successfully created user");
                 session.close();

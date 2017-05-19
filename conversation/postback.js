@@ -41,6 +41,7 @@ module.exports = {
             .then(() => {
                 console.log("succesfully scheduled event");
                 send.sendTextMessages(senderID, ["Successfully scheduled event!"]);
+                user.setInputState(senderID, 'DEFAULT');
             })
             .catch(defaultFailure(senderID));
     }

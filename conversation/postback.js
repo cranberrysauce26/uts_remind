@@ -9,16 +9,14 @@ const defaultFailure = require('./default_failure.js');
 module.exports = {
     GET_STARTED: function (senderID) {
         console.log("New user with id", senderID);
-
         user
             .createNewUser(senderID)
             .then(() => {
-                console.log("In .then of get started postback");
+                console.log("postback.js. succesfully created user with id", senderID);
                 send.sendTextMessages(
                     senderID,
-                    ["Welcome to UTS Remind", "Please enter a username to get started"]
+                    ["Welcome to UTS Remind", "TEST: type 'add event'"]
                 );
-                user.setInputState(senderID, "SET_NAME").catch( defaultFailure(senderID) );
             })
             .catch( defaultFailure(senderID) );
     },
@@ -40,7 +38,7 @@ module.exports = {
     SCHEDULE_EVENT: function (senderID) {
         event
             .schedule(senderID)
-            .then(()=> {
+            .then(() => {
                 console.log("succesfully scheduled event");
                 send.sendTextMessages(senderID, ["Successfully scheduled event!"]);
             })

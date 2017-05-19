@@ -14,7 +14,7 @@ router.get('/', function (req, res) {
 
 router.post('/', function (req, res) {
     var data = req.body;
-    console.log(JSON.stringify(data));
+    console.log('Recieved post to webhook', JSON.stringify(data));
 
     if (data.object === 'page') {
         if (data.entry) {

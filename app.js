@@ -13,7 +13,6 @@ const facebook = require('./facebook');
 // routers
 const index = require('./routes/index');
 const webhook = require('./routes/webhook');
-const authorize = require('./routes/authorize');
 
 var app = express();
 
@@ -29,7 +28,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/webhook', webhook);
-app.use('/authorize', authorize);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

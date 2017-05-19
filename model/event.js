@@ -49,7 +49,7 @@ module.exports = {
 
         return session
             .run(`MATCH (u:User) WHERE u.facebook_id=${senderID} RETURN u.timezone_offset AS timezoneOffset`)
-            .then( (result) => {
+            .then((result) => {
                 const timezoneOffset = result.records[0].get('timezoneOffset');
                 chronoResults[0].start.assign('timezoneOffset', timezoneOffset);
                 return chronoResults[0].start.date().toString();
@@ -63,7 +63,7 @@ module.exports = {
                     })
                     .catch((error) => {
                         console.log("Error setting event remind time", error);
-                        return new Promise( (resolve, reject) => {
+                        return new Promise((resolve, reject) => {
                             reject("A database error occured");
                         });
                     })
@@ -76,9 +76,10 @@ module.exports = {
     },
 
     schedule: function (senderID) {
+        console.log(`Scheduling event for user with id ${senderID}`);
         const session = driver.session();
 
-        session
+        return session
             .run(`MATCH (e:Event)-[:Reminds]->(u:User) WHERE e.owner_id=${senderID} AND e.scheduled=false RETURN e.name AS eventName, e.description AS eventDescription, u.facebook_id AS userID, u.first_name AS firstName`)
             .then((result) => {
                 var remindData = {
@@ -86,6 +87,7 @@ module.exports = {
                 };
 
                 result.records.forEach((q) => {
+                    console.log("q is", q);
                     remindData.eventName = remindData.eventName || q.get('eventName');
                     remindData.eventDescription = remindData.eventDescription || q.get('eventDescription');
                     remindData.subscribers.push({
@@ -95,8 +97,24 @@ module.exports = {
                 })
                 nodeSchedule.scheduleJob(remindData.remindTime, remind(remindData));
             })
-            .catch(() => {
-                reject("A database error occured");
+            .then(() => {
+                return session
+                    .run(`MATCH (e:Event) WHERE e.owner_id=${senderID} AND e.scheduled=false SET e.scheduled=true RETURN e.scheduled`)
+                    .then(() => {
+                        session.close();
+                    })
+                    .catch((err) => {
+                        console.error("Error scheduling event", err);
+                        return new Promise((resolve, reject) => {
+                            reject("A database error occured");
+                        });
+                    })
+            })
+            .catch((err) => {
+                console.error("Error scheduling event", err);
+                return new Promise((resolve, reject) => {
+                    reject("A database error occured");
+                });
             })
     },
 

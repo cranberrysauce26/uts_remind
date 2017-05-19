@@ -10,12 +10,14 @@ module.exports = {
 
     DEFAULT: function (senderID, text) {
         if (text==='add event') {
+            console.log("add event");
             send.sendQuickReplies(senderID, 'add event?', [
                 {
                     text: "Add event",
                     payload: "CREATE_EVENT"
                 }
             ]);
+            return;
         }
         send.sendTextMessages(senderID, ["Sorry I am illiterate"]);
     },

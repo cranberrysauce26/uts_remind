@@ -79,11 +79,8 @@ module.exports = {
         const session = driver.session();
 
         session
-            .run(`MATCH (e:Event)-[:Reminds]->(u:User) 
-            WHERE e.owner_id=${senderID} AND 
-            e.scheduled=false RETURN e.name AS eventName, e.description AS eventDescription, u.facebook_id AS userID, u.first_name AS firstName`)
+            .run(`MATCH (e:Event)-[:Reminds]->(u:User) WHERE e.owner_id=${senderID} AND e.scheduled=false RETURN e.name AS eventName, e.description AS eventDescription, u.facebook_id AS userID, u.first_name AS firstName`)
             .then((result) => {
-
                 var remindData = {
                     subscribers: []
                 };

@@ -15,7 +15,7 @@ module.exports =
                         reject("A facebook error occured");
                     }
                     session
-                        .run(`CREATE (n:User {facebook_id: ${id}, first_name: ${q.first_name}, last_name: ${q.last_name}, timezone: ${q.timezone}, input_state: 'DEFAULT'}) RETURN n`)
+                        .run(`CREATE (n:User {facebook_id: ${id}, first_name: '${q.first_name}', last_name: '${q.last_name}', timezone: ${q.timezone}, input_state: 'DEFAULT'}) RETURN n`)
                         .then(() => {
                             console.log(`Successfully created user with id ${id}`);
                             session.close();

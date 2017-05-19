@@ -12,11 +12,12 @@ module.exports = {
         user
             .createNewUser(senderID)
             .then(() => {
+                console.log("In .then of get started postback");
                 send.sendTextMessages(
                     senderID,
                     ["Welcome to UTS Remind", "Please enter a username to get started"]
                 );
-                user.setInputState(senderID, "SET_NAME");
+                user.setInputState(senderID, "SET_NAME").catch( defaultFailure(senderID) );
             })
             .catch( defaultFailure(senderID) );
     },

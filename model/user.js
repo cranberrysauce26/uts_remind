@@ -1,20 +1,20 @@
 'use strict';
 var driver = require('./driver');
 
-
 module.exports = 
 {
-    createNewUser : (id, success, failure) => {
+    createNewUser : (id) => {
         console.log("constructor for user with id " + id);
         const session = driver.session();
 
         return session
-            .run(`CREATE (n:User {facebook_id: ${id}, input_state: 'DEFAULT') RETURN n.id`)
-            .then( (result) => {
+            .run(`CREATE (n:User {facebook_id: ${id}, input_state: 'DEFAULT') RETURN n`)
+            .then( () => {
                 console.log("successfully created user");
                 session.close();
             })
             .catch( () => {
+                console.log("Error creating user");
                 return new Promise( (resolve, reject) => {
                     reject("A database error occured");
                 } );

@@ -71,6 +71,6 @@ module.exports.sendQuickReplies = function (senderID, message, quickReplies) {
     });
   })
   console.log(messageData);
-  send(messageData);
+  send([messageData]);
 }
 

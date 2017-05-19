@@ -44,15 +44,15 @@ module.exports = {
                     senderID,
                     ["When do you want people to be reminded?"]
                 );
-                user.setInputState(senderID, 'SET_TIME_FOR_EVENT').catch(defaultFailure(senderID));
+                user.setInputState(senderID, 'SET_REMIND_TIME_FOR_EVENT').catch(defaultFailure(senderID));
             })
             .catch(defaultFailure(senderID))
     },
 
-    SET_TIME_FOR_EVENT: function (senderID, text) {
+    SET_REMIND_TIME_FOR_EVENT: function (senderID, text) {
         console.log("Setting time for event", text);
         event
-            .setEventStartTime(senderID, text)
+            .setEventRemindTime(senderID, text)
             .then(() => {
                 send.sendTextMessages(
                     senderID,
@@ -65,7 +65,7 @@ module.exports = {
 
     SET_DESCRIPTION_FOR_EVENT: function (senderID, text) {
         event
-            .setEventDescription(senderID, text)
+            .setDescription(senderID, text)
             .then(() => {
                 send.sendQuickReplies(
                     senderID,

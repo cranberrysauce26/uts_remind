@@ -2,6 +2,7 @@
 
 const send = require('../facebook/send');
 const user = require('../model/user');
+const event = require('../model/event');
 
 const defaultFailure = require('./default_failure.js');
 
@@ -37,6 +38,12 @@ module.exports = {
     },
 
     SCHEDULE_EVENT: function (senderID) {
-
+        event
+            .schedule(senderID)
+            .then(()=> {
+                console.log("succesfully scheduled event");
+                send.sendTextMessages(senderID, ["Successfully scheduled event!"]);
+            })
+            .catch(defaultFailure(senderID));
     }
 }

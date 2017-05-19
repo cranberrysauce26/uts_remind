@@ -34,7 +34,6 @@ module.exports = {
         );
 
         input.setInputState(senderID, 'SET_NAME_FOR_EVENT').catch(defaultFailure(senderID));
-
     },
 
     SCHEDULE_EVENT: function (senderID) {

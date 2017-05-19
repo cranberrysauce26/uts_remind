@@ -9,6 +9,14 @@ const defaultFailure = require('./default_failure');
 module.exports = {
 
     DEFAULT: function (senderID, text) {
+        if (text==='add event') {
+            send.sendQuickReplies(senderID, 'add event?', [
+                {
+                    text: "Add event",
+                    payload: "CREATE_EVENT"
+                }
+            ]);
+        }
         send.sendTextMessages(senderID, ["Sorry I am illiterate"]);
     },
 
@@ -24,9 +32,11 @@ module.exports = {
     },
 
     SET_NAME_FOR_EVENT: function (senderID, text) {
+        console.log("Setting name for event", text);
         event
             .create(senderID, text)
             .then(() => {
+                console.log("Succesfully set name");
                 send.sendTextMessages(
                     senderID,
                     ["When do you want people to be reminded?"]
@@ -37,6 +47,7 @@ module.exports = {
     },
 
     SET_TIME_FOR_EVENT: function (senderID, text) {
+        console.log("Setting time for event", text);
         event
             .setEventStartTime(senderID, text)
             .then(() => {

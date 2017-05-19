@@ -27,6 +27,7 @@ module.exports = {
             .then( () => {
                 console.log("In .then set_name input.js");
                 send.sendTextMessages(senderID, ["Recorded!"]);
+                user.setInputState(senderID, 'DEFAULT').catch(defaultFailure(senderID));
             })
             .catch(defaultFailure(senderID));
     },

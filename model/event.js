@@ -71,7 +71,7 @@ module.exports = {
             .then((formattedTime) => {
                 return session
                     .run(`MATCH (e:Event) WHERE e.owner_id=${senderID} AND e.scheduled=false SET e.remind_time='${formattedTime}' RETURN e`)
-                    .then(() => {
+                    .then((result) => {
                         console.log("Set the event remind time");
                         session.close();
                     })
@@ -80,8 +80,8 @@ module.exports = {
                         return Promise.reject(0);
                     })
             })
-            .catch(() => {
-                console.log("error at timezone query?");
+            .catch((error) => {
+                console.log("error at timezone query?", error);
                 return Promise.reject(0);
             })
     },

@@ -23,13 +23,16 @@ reminderData = {
 */
 
 module.exports = function (reminderData) {
-
+    console.log("In remind.js returning a function with reminderData");
+    console.log(JSON.stringify(reminderData));
     return () => {
         console.log("Executing event");
         reminderData.subscribers.forEach((sub) => {
+            console.log("Sub is,", JSON.stringify(sub) )
             send.sendTextMessages(
                 sub.id,
                 (() => {
+                    console.log("In anonymous function");
                     if (sub.id===reminderData.eventOwner) {
                         //
                         return [

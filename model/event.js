@@ -98,7 +98,7 @@ module.exports = {
         return session
             .run(`MATCH (e:Event)-[:Reminds]->(u:User) WHERE e.owner_id=${senderID} AND e.scheduled=false RETURN e.remind_time AS remindTime, e.name AS eventName, e.description AS eventDescription, u.facebook_id AS userID, u.first_name AS firstName`)
             .then((result) => {
-
+                console.log("Result is", JSON.stringify(result)  );
                 var remindTime;
 
                 var remindData = {
@@ -115,6 +115,7 @@ module.exports = {
                         first_name: q.get('firstName')
                     });
                 })
+                console.log("remindTime is", remindTime);
                 nodeSchedule.scheduleJob(new Date(remindTime), remind(remindData) );
             })
             .then(() => {

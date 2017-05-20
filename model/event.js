@@ -68,7 +68,7 @@ module.exports = {
                 .then((formattedTime) => {
                     console.log("formattedTime is", formattedTime);
                     return session
-                        .run(`MATCH (e:Event) WHERE e.owner_id=${senderID} AND e.scheduled=false SET e.remind_time='${formattedTime}' RETURN e`)
+                        .run(`MATCH (e:Event) WHERE e.owner_id='${senderID}' AND e.scheduled=false SET e.remind_time='${formattedTime}' RETURN e`)
                         .then((result) => {
                             console.log("Set the event remind time. result.records[0] is", JSON.stringify(result.records[0]));
                             session.close();

@@ -96,14 +96,18 @@ module.exports = {
         const session = driver.session();
 
         return session
-            .run(`MATCH (e:Event)-[:Reminds]->(u:User) WHERE e.owner_id=${senderID} AND e.scheduled=false RETURN e.name AS eventName, e.description AS eventDescription, u.facebook_id AS userID, u.first_name AS firstName`)
+            .run(`MATCH (e:Event)-[:Reminds]->(u:User) WHERE e.owner_id=${senderID} AND e.scheduled=false RETURN e.remind_time AS remindTime, e.name AS eventName, e.description AS eventDescription, u.facebook_id AS userID, u.first_name AS firstName`)
             .then((result) => {
+
+                var remindTime;
+
                 var remindData = {
                     subscribers: []
                 };
 
                 result.records.forEach((q) => {
                     console.log("q is", q);
+                    remindTime = remindTime || q.get('remindTime');
                     remindData.eventName = remindData.eventName || q.get('eventName');
                     remindData.eventDescription = remindData.eventDescription || q.get('eventDescription');
                     remindData.subscribers.push({
@@ -111,7 +115,7 @@ module.exports = {
                         first_name: q.get('firstName')
                     });
                 })
-                nodeSchedule.scheduleJob(remindData.remindTime, remind(remindData));
+                nodeSchedule.scheduleJob(new Date(remindTime), remind(remindData) );
             })
             .then(() => {
                 return session

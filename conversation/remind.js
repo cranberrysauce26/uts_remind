@@ -25,6 +25,7 @@ reminderData = {
 module.exports = function (reminderData) {
 
     return () => {
+        console.log("Executing event");
         reminderData.subscribers.forEach((sub) => {
             send.sendTextMessages(
                 sub.id,

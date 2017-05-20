@@ -64,7 +64,7 @@ module.exports = {
                         reject(1);
                         return;
                     }
-                    chronoResults[0].start.assign('timezoneOffset', timezoneOffset);
+                    chronoResults[0].start.assign('timezoneOffset', -1*timezoneOffset);
 
                     return chronoResults[0].start.date().toString();
                 })

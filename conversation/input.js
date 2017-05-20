@@ -42,7 +42,7 @@ const inputs = {
     SET_NAME_FOR_EVENT: function (senderID, text) {
         console.log("Setting name for event", text);
         event
-            .create(senderID, text)
+            .createNewEvent(senderID, text)
             .then(() => {
                 console.log("Succesfully set name");
                 send.sendTextMessages(

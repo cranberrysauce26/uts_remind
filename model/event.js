@@ -7,7 +7,7 @@ const chrono = require('chrono-node');
 
 module.exports = {
 
-    create: function (senderID, name) {
+    createNewEvent: function (senderID, name) {
         // Each creator has at most one event
         const session = driver.session();
         return session
@@ -92,7 +92,7 @@ module.exports = {
         const session = driver.session();
 
         return session
-            .run(`MATCH (e:Event)-[:Reminds]->(u:User) WHERE e.owner_id='${senderID}' AND e.scheduled=false RETURN e.remind_time AS remindTime, e.name AS eventName, e.description AS eventDescription, u.facebook_id AS userID, u.first_name AS firstName`)
+            .run(`MATCH (e:Event)-[:Reminds]->(u:User) WHERE e.owner_id='${senderID}' AND e.scheduled=false RETURN e.remind_time AS remindTime, e.name AS eventName, e.description AS eventDescription, e.owner_id AS eventOwner, u.facebook_id AS userID, u.first_name AS firstName`)
             .then((result) => {
                 console.log("Result is", JSON.stringify(result));
                 var remindTime;
@@ -108,6 +108,7 @@ module.exports = {
                     remindTime = remindTime || q.get('remindTime');
                     remindData.eventName = remindData.eventName || q.get('eventName');
                     remindData.eventDescription = remindData.eventDescription || q.get('eventDescription');
+                    remindData.eventOwner = remindData.eventOwner || q.get('eventOwner');
                     remindData.subscribers.push({
                         id: q.get('userID'),
                         first_name: q.get('firstName')

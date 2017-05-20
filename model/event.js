@@ -7,8 +7,6 @@ const chrono = require('chrono-node');
 
 module.exports = {
 
-    // TODO: Apostrophe's can screw up records!!!
-
     create: function (senderID, name) {
         // Each creator has at most one event
         const session = driver.session();
@@ -54,20 +52,17 @@ module.exports = {
         var chronoResults = new chrono.parse(remindTime);
 
         return new Promise((resolve, reject) => {
+            if (chronoResults.length === 0) {
+                console.log("Invalid date");
+                reject(1);
+                return;
+            }
             session
                 .run(`MATCH (u:User) WHERE u.facebook_id=${senderID} RETURN u.timezone AS timezoneOffset`)
                 .then((result) => {
                     const timezoneOffset = result.records[0].get('timezoneOffset');
-
-                    if (chronoResults.length === 0) {
-                        console.log("Invalid date");
-                        reject(1);
-                        return;
-                    }
-                    console.log("Date before offset is", chronoResults[0].start.date() );
-                    chronoResults[0].start.assign('timezoneOffset', 60*timezoneOffset);
-                    console.log("60*timezoneOffset is", 60*timezoneOffset);
-                    console.log("Date after offset is", chronoResults[0].start.date() );
+                    chronoResults[0].start.assign('timezoneOffset', 60 * timezoneOffset);
+                    
                     return chronoResults[0].start.date().toString();
                 })
                 .then((formattedTime) => {
@@ -98,7 +93,7 @@ module.exports = {
         return session
             .run(`MATCH (e:Event)-[:Reminds]->(u:User) WHERE e.owner_id=${senderID} AND e.scheduled=false RETURN e.remind_time AS remindTime, e.name AS eventName, e.description AS eventDescription, u.facebook_id AS userID, u.first_name AS firstName`)
             .then((result) => {
-                console.log("Result is", JSON.stringify(result)  );
+                console.log("Result is", JSON.stringify(result));
                 var remindTime;
 
                 var remindData = {
@@ -106,7 +101,9 @@ module.exports = {
                 };
 
                 result.records.forEach((q) => {
+                                    
                     console.log("q is", q);
+                    console.log(q.get('userID'));
                     remindTime = remindTime || q.get('remindTime');
                     remindData.eventName = remindData.eventName || q.get('eventName');
                     remindData.eventDescription = remindData.eventDescription || q.get('eventDescription');
@@ -116,7 +113,7 @@ module.exports = {
                     });
                 })
                 console.log("remindTime is", remindTime);
-                nodeSchedule.scheduleJob(new Date(remindTime), remind(remindData) );
+                nodeSchedule.scheduleJob(new Date(remindTime), remind(remindData));
             })
             .then(() => {
                 return session

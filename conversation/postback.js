@@ -13,13 +13,14 @@ module.exports = function (senderID, payload) {
 const postbacks = {
     GET_STARTED: function (senderID) {
         console.log("New user with id", senderID);
+        send.sendTextMessages(senderID, ["Welcome to UTS Remind", "Please give me a second to set up your account"]);
         user
             .createNewUser(senderID)
             .then(() => {
                 console.log("postback.js. succesfully created user with id", senderID);
                 send.sendTextMessages(
                     senderID,
-                    ["Welcome to UTS Remind", "TEST: type 'add event'"]
+                    ["All right!", "TESTING: type 'add event' "]
                 );
             })
             .catch(defaultFailure(senderID));

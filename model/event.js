@@ -51,7 +51,7 @@ module.exports = {
 
     setEventRemindTime: function (senderID, remindTime) {
         const session = driver.session();
-        var chronoResults = chrono.parse(remindTime);
+        var chronoResults = new chrono.parse(remindTime);
 
         return session
             .run(`MATCH (u:User) WHERE u.facebook_id=${senderID} RETURN u.timezone_offset AS timezoneOffset`)

@@ -70,7 +70,7 @@ module.exports =
                 })
                 .catch((error) => {
                     console.log("error querying database", error);
-                    return new Promise.resolve('DEFAULT');
+                    return new Promise.reject();
                 });
         },
 

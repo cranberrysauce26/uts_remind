@@ -5,7 +5,7 @@ const user = require('../model/user');
 
 module.exports = (senderID) => {
     return (errorCode) => {
-        console.log("errorCode is", erroCode);
+        console.log("errorCode is", errorCode);
         if (failures.hasOwnProperty(errorCode)) {
             console.log("failures has property errorCode");
             return failures[errorCode](senderID);

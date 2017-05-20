@@ -75,6 +75,7 @@ module.exports = {
                     return Math.floor(chronoResults[0].start.date().getTime() / 6000) ;
                 })
                 .then((minutes) => {
+                    console.log("Minutes is", minutes);
                     return session
                         .run(`MATCH (e:Event) WHERE e.owner_id='${senderID}' AND e.scheduled=false SET e.remind_time=${minutes} RETURN e`)
                         .then((result) => {

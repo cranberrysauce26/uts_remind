@@ -20,9 +20,7 @@ module.exports = {
             })
             .catch((error) => {
                 console.log("Error creating event", error);
-                return new Promise((resolve, reject) => {
-                    reject("A database error occured");
-                });
+                return Promise.reject("A database error occured");
             });
     },
 
@@ -33,9 +31,7 @@ module.exports = {
             .then( ()=> session.close())
             .catch((error) => {
                 console.log("Error deleting event", error);
-                return new Promise((resolve, reject) => {
-                    reject("A database error occured");
-                });
+                return Promise.reject("A database error occured");
             });
     },
 
@@ -49,9 +45,7 @@ module.exports = {
             })
             .catch((error) => {
                 console.log("Error adding description for event", error);
-                return new Promise((resolve, reject) => {
-                    reject("A database error occured");
-                });
+                return Promise.reject("A database error occured");
             });
     },
 
@@ -64,7 +58,12 @@ module.exports = {
             .then((result) => {
                 const timezoneOffset = result.records[0].get('timezoneOffset');
                 chronoResults[0].start.assign('timezoneOffset', timezoneOffset);
-                return chronoResults[0].start.date().toString();
+                const datString = chronoResults[0].start.date().toString();
+                if (datString === "Invalid Date") {
+                    console.log("Recieved an invalid date");
+                    return Promise.reject(1);
+                }
+                return datString;
             })
             .then((formattedTime) => {
                 return session
@@ -75,9 +74,7 @@ module.exports = {
                     })
                     .catch((error) => {
                         console.log("Error setting event remind time", error);
-                        return new Promise((resolve, reject) => {
-                            reject("A database error occured");
-                        });
+                        return Promise.reject(0);
                     })
             })
             .catch(() => {
@@ -117,16 +114,12 @@ module.exports = {
                     })
                     .catch((err) => {
                         console.error("Error scheduling event", err);
-                        return new Promise((resolve, reject) => {
-                            reject("A database error occured");
-                        });
+                        return Promise.reject("A database error occured");
                     })
             })
             .catch((err) => {
                 console.error("Error scheduling event", err);
-                return new Promise((resolve, reject) => {
-                    reject("A database error occured");
-                });
+                return Promise.reject("A database error occured");
             })
     },
 

@@ -65,7 +65,18 @@ const inputs = {
                 );
                 user.setInputState(senderID, 'SET_DESCRIPTION_FOR_EVENT').catch(defaultFailure(senderID));
             })
-            .catch(defaultFailure(senderID));
+            .catch( (errno) => {
+                if (errno===0) {
+                    send.sendTextMessages(senderID, ["Sorry a database error occured. Please try again."]);
+                    return;
+                }
+                if (errno===1) {
+                    send.sendTextMessages(senderID, ["Please enter a valid date. For example, you can say", ["May 4 at 3pm"]]);
+                    return;
+                }
+                send.sendTextMessages(senderID, ["Sorry, an unknown error occured. Please start from the beginning"]);
+                user.setInputState(senderID, 'DEFAULT').catch(defaultFailure(senderID));
+            });
     },
 
     SET_DESCRIPTION_FOR_EVENT: function (senderID, text) {

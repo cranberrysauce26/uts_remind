@@ -36,9 +36,11 @@ module.exports = {
                 user
                     .getInputState(id)
                     .then( (state) => {
+                        console.log("got input state", state);
                         input(id, message.text, state);
                     })
                     .catch( () => {
+                        console.log("can't get input state sending default");
                         input(id, message.text, 'DEFAULT');
                     });
             });

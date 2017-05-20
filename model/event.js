@@ -55,7 +55,7 @@ module.exports = {
 
         return new Promise((resolve, reject) => {
             session
-                .run(`MATCH (u:User) WHERE u.facebook_id=${senderID} RETURN u.timezone_offset AS timezoneOffset`)
+                .run(`MATCH (u:User) WHERE u.facebook_id=${senderID} RETURN u.timezone AS timezoneOffset`)
                 .then((result) => {
                     const timezoneOffset = result.records[0].get('timezoneOffset');
 

@@ -66,6 +66,7 @@ const inputs = {
                 user.setInputState(senderID, 'SET_DESCRIPTION_FOR_EVENT').catch(defaultFailure(senderID));
             })
             .catch( (errno) => {
+                console.log("recieved error setting remind time", errno);
                 if (errno===0) {
                     send.sendTextMessages(senderID, ["Sorry a database error occured. Please try again."]);
                     return;

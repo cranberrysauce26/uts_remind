@@ -58,9 +58,12 @@ module.exports = {
             .then((result) => {
                 const timezoneOffset = result.records[0].get('timezoneOffset');
                 chronoResults[0].start.assign('timezoneOffset', timezoneOffset);
+                console.log("date is ", JSON.stringify(chronoResults[0].start.date() ));
                 const datString = chronoResults[0].start.date().toString();
+                console.log("datString is", datString);
                 if (datString === "Invalid Date") {
                     console.log("Recieved an invalid date");
+                    session.close();
                     return Promise.reject(1);
                 }
                 return datString;
@@ -78,9 +81,8 @@ module.exports = {
                     })
             })
             .catch(() => {
-                return new Promise((resolve, reject) => {
-                    reject("A database error occured");
-                });
+                console.log("error at timezone query?");
+                return Promise.reject(0);
             })
     },
 

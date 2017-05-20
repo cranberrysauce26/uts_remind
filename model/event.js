@@ -24,11 +24,11 @@ module.exports = {
             });
     },
 
-    deleteUnscheduledEvent: function(senderID) {
+    deleteUnscheduledEvent: function (senderID) {
         const session = driver.session();
         return session
             .run(`MATCH (e:Event) WHERE e.owner_id=${senderID} DETACH DELETE e`)
-            .then( ()=> session.close())
+            .then(() => session.close())
             .catch((error) => {
                 console.log("Error deleting event", error);
                 return Promise.reject("A database error occured");
@@ -53,35 +53,40 @@ module.exports = {
         const session = driver.session();
         var chronoResults = new chrono.parse(remindTime);
 
-        return session
-            .run(`MATCH (u:User) WHERE u.facebook_id=${senderID} RETURN u.timezone_offset AS timezoneOffset`)
-            .then((result) => {
-                const timezoneOffset = result.records[0].get('timezoneOffset');
-                
-                if (chronoResults.start===undefined) {
-                    console.log("Invalid date");
-                    return Promise.reject(1);
-                }
-                chronoResults[0].start.assign('timezoneOffset', timezoneOffset);
+        return new Promise((resolve, reject) => {
+            session
+                .run(`MATCH (u:User) WHERE u.facebook_id=${senderID} RETURN u.timezone_offset AS timezoneOffset`)
+                .then((result) => {
+                    const timezoneOffset = result.records[0].get('timezoneOffset');
 
-                return chronoResults[0].start.date().toString();
-            })
-            .then((formattedTime) => {
-                return session
-                    .run(`MATCH (e:Event) WHERE e.owner_id=${senderID} AND e.scheduled=false SET e.remind_time='${formattedTime}' RETURN e`)
-                    .then((result) => {
-                        console.log("Set the event remind time");
-                        session.close();
-                    })
-                    .catch((error) => {
-                        console.log("Error setting event remind time", error);
-                        return Promise.reject(0);
-                    })
-            })
-            .catch((error) => {
-                console.log("error at timezone query?", error);
-                return Promise.reject(0);
-            })
+                    if (chronoResults.start === undefined) {
+                        console.log("Invalid date");
+                        reject(1);
+                        return;
+                    }
+                    chronoResults[0].start.assign('timezoneOffset', timezoneOffset);
+
+                    return chronoResults[0].start.date().toString();
+                })
+                .then((formattedTime) => {
+                    return session
+                        .run(`MATCH (e:Event) WHERE e.owner_id=${senderID} AND e.scheduled=false SET e.remind_time='${formattedTime}' RETURN e`)
+                        .then((result) => {
+                            console.log("Set the event remind time");
+                            session.close();
+                            resolve();
+                        })
+                        .catch((error) => {
+                            console.log("Error setting event remind time", error);
+                            reject(0);
+                        })
+                })
+                .catch((error) => {
+                    console.log("error at timezone query?", error);
+                    reject(0);
+                })
+        })
+
     },
 
     schedule: function (senderID) {

@@ -72,7 +72,7 @@ const inputs = {
                     return;
                 }
                 if (errno===1) {
-                    send.sendTextMessages(senderID, ["Please enter a valid date. For example, you can say", ["May 4 at 3pm"]]);
+                    send.sendTextMessages(senderID, ["Please enter a valid date. For example, you can say", "May 4 at 3pm"]);
                     return;
                 }
                 send.sendTextMessages(senderID, ["Sorry, an unknown error occured. Please start from the beginning"]);

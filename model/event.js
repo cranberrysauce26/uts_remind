@@ -66,7 +66,7 @@ module.exports = {
                     const now = new Date();
                     if (date <= now) {
                         reject('PAST_DATE_ERROR');
-                        return;
+                        return Promise.reject('CONTINUE');
                     }
                     // get the number of minutes since 1970 something. 6000 milliseconds in a minute
                     // Javascript supports up to 10 digit integers. 
@@ -89,6 +89,7 @@ module.exports = {
                         })
                 })
                 .catch((error) => {
+                    if (error==='CONTINUE') return;
                     console.log("error at timezone query?", error);
                     reject('DATABASE_ERROR');
                 })

@@ -37,7 +37,7 @@ module.exports = {
                     reject("A database error occured");
                 });
             });
-    }
+    },
 
     setDescription: function (senderID, description) {
         const session = driver.session();

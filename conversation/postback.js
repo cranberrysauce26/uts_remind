@@ -6,7 +6,7 @@ const event = require('../model/event');
 
 const defaultFailure = require('./default_failure.js');
 
-module.exports = function(senderID, payload) {
+module.exports = function (senderID, payload) {
     postbacks[payload](senderID);
 }
 
@@ -22,7 +22,7 @@ const postbacks = {
                     ["Welcome to UTS Remind", "TEST: type 'add event'"]
                 );
             })
-            .catch( defaultFailure(senderID) );
+            .catch(defaultFailure(senderID));
     },
 
     LIST_FUTURE_EVENTS_FOR_USER: function (senderID) {
@@ -46,6 +46,15 @@ const postbacks = {
                 console.log("succesfully scheduled event");
                 send.sendTextMessages(senderID, ["Successfully scheduled event!"]);
                 user.setInputState(senderID, 'DEFAULT');
+            })
+            .catch(defaultFailure(senderID));
+    },
+
+    CANCEL_EVENT: function (senderID) {
+        event
+            .deleteUnscheduledEvent(senderID)
+            .then(() => {
+                user.setInputState(senderID, 'DEFAULT').catch(defaultFailure(senderID));
             })
             .catch(defaultFailure(senderID));
     }

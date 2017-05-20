@@ -26,6 +26,18 @@ module.exports = {
             });
     },
 
+    deleteUnscheduledEvent: function(senderID) {
+        const session = driver.session();
+        return session
+            .run(`MATCH (e:Event) WHERE e.owner_id=${senderID} DETACH DELETE e`)
+            .then( ()=> session.close())
+            .catch((error) => {
+                console.log("Error deleting event", error);
+                return new Promise((resolve, reject) => {
+                    reject("A database error occured");
+                });
+            });
+    }
 
     setDescription: function (senderID, description) {
         const session = driver.session();

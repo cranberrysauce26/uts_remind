@@ -22,27 +22,24 @@ module.exports = {
                 }
 
                 if (!messagingEvent.hasOwnProperty('message')) {
-                    console.error("messaging event contains no message or postback: ");
-                    console.error(messagingEvent);
+                    console.error("messaging event contains no message or postback", JSON.stringify(messagingEvent));
                     return;
                 }
 
                 const message = messagingEvent.message;
 
                 if (message.hasOwnProperty('quick_reply')) {
-                    var payload = message.quick_reply.payload;
-                    postback(id, payload);
+                    postback(id, message.quick_reply.payload);
                     return;
                 }
 
                 user
                     .getInputState(id)
                     .then( (state) => {
-                        console.log("state is", state);
-                        input[state](id, message.text);
+                        input(id, message.text, state);
                     })
                     .catch( () => {
-                        input.DEFAULT(id, message.text);
+                        input(id, message.text, 'DEFAULT');
                     });
             });
         });

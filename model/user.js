@@ -15,7 +15,7 @@ module.exports =
                         reject("A facebook error occured");
                     }
                     session
-                        .run(`CREATE (n:User {facebook_id: ${id}, first_name: '${q.first_name}', last_name: '${q.last_name}', timezone: ${q.timezone}, input_state: 'DEFAULT'}) RETURN n`)
+                        .run(`CREATE (n:User {facebook_id: '${id}', first_name: '${q.first_name}', last_name: '${q.last_name}', timezone: ${q.timezone}, input_state: 'DEFAULT'}) RETURN n`)
                         .then(() => {
                             console.log(`Successfully created user with id ${id}`);
                             session.close();
@@ -33,7 +33,7 @@ module.exports =
             console.log("in name");
             const session = driver.session();
             return session
-                .run(`MATCH (p:User) WHERE p.facebook_id=${id} SET p.name='${name}' RETURN p`)
+                .run(`MATCH (p:User) WHERE p.facebook_id='${id}' SET p.name='${name}' RETURN p`)
                 .then(() => {
                     console.log("succesfully set name");
                     session.close();
@@ -63,7 +63,7 @@ module.exports =
             console.log("In getInputState");
             const session = driver.session();
             return session
-                .run(`MATCH (p:User) WHERE p.facebook_id=${id} RETURN p.input_state AS inputState`)
+                .run(`MATCH (p:User) WHERE p.facebook_id='${id}' RETURN p.input_state AS inputState`)
                 .then((result) => {
                     const inputState = result.records[0].get('inputState');
                     console.log("successfully queried database. returning", inputState);
@@ -81,7 +81,7 @@ module.exports =
         setInputState: function (id, state) {
             const session = driver.session();
             return session
-                .run(`MATCH (p:User) WHERE p.facebook_id=${id} SET p.input_state='${state}' RETURN p`)
+                .run(`MATCH (p:User) WHERE p.facebook_id='${id}' SET p.input_state='${state}' RETURN p`)
                 .then(() => {
                     session.close();
                 })

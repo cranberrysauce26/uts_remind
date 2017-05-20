@@ -11,7 +11,7 @@ module.exports = {
         // Each creator has at most one event
         const session = driver.session();
         return session
-            .run(`MATCH (u:User) WHERE u.facebook_id=${senderID} CREATE (e:Event {name: '${name}', owner_id: ${senderID}, scheduled: false})-[:Reminds]->(u) RETURN e`)
+            .run(`MATCH (u:User) WHERE u.facebook_id='${senderID}' CREATE (e:Event {name: '${name}', owner_id: '${senderID}', scheduled: false})-[:Reminds]->(u) RETURN e`)
             .then(() => {
                 console.log("Created event in event!");
                 session.close();
@@ -25,7 +25,7 @@ module.exports = {
     deleteUnscheduledEvent: function (senderID) {
         const session = driver.session();
         return session
-            .run(`MATCH (e:Event) WHERE e.owner_id=${senderID} DETACH DELETE e`)
+            .run(`MATCH (e:Event) WHERE e.owner_id='${senderID}' DETACH DELETE e`)
             .then(() => session.close())
             .catch((error) => {
                 console.log("Error deleting event", error);
@@ -36,7 +36,7 @@ module.exports = {
     setDescription: function (senderID, description) {
         const session = driver.session();
         return session
-            .run(`MATCH (e:Event) WHERE e.owner_id=${senderID} AND e.scheduled=false SET e.description='${description}' RETURN e`)
+            .run(`MATCH (e:Event) WHERE e.owner_id='${senderID}' AND e.scheduled=false SET e.description='${description}' RETURN e`)
             .then(() => {
                 console.log("set the description in event!");
                 session.close();
@@ -58,7 +58,7 @@ module.exports = {
                 return;
             }
             session
-                .run(`MATCH (u:User) WHERE u.facebook_id=${senderID} RETURN u.timezone AS timezoneOffset`)
+                .run(`MATCH (u:User) WHERE u.facebook_id='${senderID}' RETURN u.timezone AS timezoneOffset`)
                 .then((result) => {
                     const timezoneOffset = result.records[0].get('timezoneOffset');
                     chronoResults[0].start.assign('timezoneOffset', 60 * timezoneOffset);
@@ -91,7 +91,7 @@ module.exports = {
         const session = driver.session();
 
         return session
-            .run(`MATCH (e:Event)-[:Reminds]->(u:User) WHERE e.owner_id=${senderID} AND e.scheduled=false RETURN e.remind_time AS remindTime, e.name AS eventName, e.description AS eventDescription, u.facebook_id AS userID, u.first_name AS firstName`)
+            .run(`MATCH (e:Event)-[:Reminds]->(u:User) WHERE e.owner_id='${senderID}' AND e.scheduled=false RETURN e.remind_time AS remindTime, e.name AS eventName, e.description AS eventDescription, u.facebook_id AS userID, u.first_name AS firstName`)
             .then((result) => {
                 console.log("Result is", JSON.stringify(result));
                 var remindTime;
@@ -117,7 +117,7 @@ module.exports = {
             })
             .then(() => {
                 return session
-                    .run(`MATCH (e:Event) WHERE e.owner_id=${senderID} AND e.scheduled=false SET e.scheduled=true RETURN e.scheduled`)
+                    .run(`MATCH (e:Event) WHERE e.owner_id='${senderID}' AND e.scheduled=false SET e.scheduled=true RETURN e.scheduled`)
                     .then(() => {
                         session.close();
                     })

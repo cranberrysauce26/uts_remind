@@ -12,7 +12,7 @@ module.exports =
                     console.log("In callback. q is", q);
                     if (q === null) {
                         console.log(`A facebook error occured when querying userInfo for user ${id}.`);
-                        reject("A facebook error occured");
+                        reject('FACEBOOK_ERROR');
                     }
                     session
                         .run(`CREATE (n:User {facebook_id: '${id}', first_name: '${q.first_name}', last_name: '${q.last_name}', timezone: ${q.timezone}, input_state: 'DEFAULT'}) RETURN n`)
@@ -23,7 +23,7 @@ module.exports =
                         })
                         .catch((err) => {
                             console.log(`Database error creating user with id ${id}`, err);
-                            reject("A database error occured");
+                            reject('DATABASE_ERROR');
                         });
                 })
             })
@@ -39,9 +39,7 @@ module.exports =
                     session.close();
                 })
                 .catch(() => {
-                    return new Promise((resolve, reject) => {
-                        reject("A database error occured");
-                    });
+                    return new Promise.reject('DATABASE_ERROR');
                 });
         },
 
@@ -72,9 +70,7 @@ module.exports =
                 })
                 .catch((error) => {
                     console.log("error querying database", error);
-                    return new Promise((resolve) => {
-                        resolve("DEFAULT");
-                    });
+                    return new Promise.resolve('DEFAULT');
                 });
         },
 
@@ -86,9 +82,7 @@ module.exports =
                     session.close();
                 })
                 .catch(() => {
-                    return new Promise((resolve, reject) => {
-                        reject("A database error occured");
-                    });
+                    return new Promise.reject('DATABASE_ERROR');
                 });
         }
     }

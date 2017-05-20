@@ -4,7 +4,7 @@ const send = require('../facebook/send');
 const user = require('../model/user');
 const event = require('../model/event');
 
-const defaultFailure = require('./default_failure.js');
+const failure = require('./failure');
 
 module.exports = function (senderID, payload) {
     postbacks[payload](senderID);
@@ -23,7 +23,7 @@ const postbacks = {
                     ["All right!", "TESTING: type 'add event' "]
                 );
             })
-            .catch(defaultFailure(senderID));
+            .catch(failure(senderID));
     },
 
     LIST_FUTURE_EVENTS_FOR_USER: function (senderID) {
@@ -37,7 +37,7 @@ const postbacks = {
             ["What's the name of your event?"]
         );
 
-        user.setInputState(senderID, 'SET_NAME_FOR_EVENT').catch(defaultFailure(senderID));
+        user.setInputState(senderID, 'SET_NAME_FOR_EVENT').catch(failure(senderID));
     },
 
     SCHEDULE_EVENT: function (senderID) {
@@ -48,15 +48,15 @@ const postbacks = {
                 send.sendTextMessages(senderID, ["Successfully scheduled event!"]);
                 user.setInputState(senderID, 'DEFAULT');
             })
-            .catch(defaultFailure(senderID));
+            .catch(failure(senderID));
     },
 
     CANCEL_EVENT: function (senderID) {
         event
             .deleteUnscheduledEvent(senderID)
             .then(() => {
-                user.setInputState(senderID, 'DEFAULT').catch(defaultFailure(senderID));
+                user.setInputState(senderID, 'DEFAULT').catch(failure(senderID));
             })
-            .catch(defaultFailure(senderID));
+            .catch(failure(senderID));
     }
 }

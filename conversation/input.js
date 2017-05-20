@@ -4,7 +4,7 @@ const send = require('../facebook/send');
 const user = require('../model/user');
 const event = require('../model/event');
 
-const defaultFailure = require('./default_failure');
+const failure = require('./failure');
 
 function formatStringQuotes(text) {
     var _text = '';
@@ -49,9 +49,9 @@ const inputs = {
                     senderID,
                     ["When do you want people to be reminded?"]
                 );
-                user.setInputState(senderID, 'SET_REMIND_TIME_FOR_EVENT').catch(defaultFailure(senderID));
+                user.setInputState(senderID, 'SET_REMIND_TIME_FOR_EVENT').catch(failure(senderID));
             })
-            .catch(defaultFailure(senderID))
+            .catch( failure(senderID) )
     },
 
     SET_REMIND_TIME_FOR_EVENT: function (senderID, text) {
@@ -63,21 +63,9 @@ const inputs = {
                     senderID,
                     ["Please add a description that includes the start time, location and any other details"]
                 );
-                user.setInputState(senderID, 'SET_DESCRIPTION_FOR_EVENT').catch(defaultFailure(senderID));
+                user.setInputState(senderID, 'SET_DESCRIPTION_FOR_EVENT').catch( failure(senderID) );
             })
-            .catch( (errno) => {
-                console.log("recieved error setting remind time", errno);
-                if (errno===0) {
-                    send.sendTextMessages(senderID, ["Sorry a database error occured. Please try again."]);
-                    return;
-                }
-                if (errno===1) {
-                    send.sendTextMessages(senderID, ["Please enter a valid date. For example, you can say", "May 4 at 3pm"]);
-                    return;
-                }
-                send.sendTextMessages(senderID, ["Sorry, an unknown error occured. Please start from the beginning"]);
-                user.setInputState(senderID, 'DEFAULT').catch(defaultFailure(senderID));
-            });
+            .catch( failure(senderID) );
     },
 
     SET_DESCRIPTION_FOR_EVENT: function (senderID, text) {

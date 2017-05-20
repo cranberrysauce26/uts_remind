@@ -18,7 +18,7 @@ module.exports = {
             })
             .catch((error) => {
                 console.log("Error creating event", error);
-                return Promise.reject("A database error occured");
+                return Promise.reject('DATABASE_ERROR');
             });
     },
 
@@ -29,7 +29,7 @@ module.exports = {
             .then(() => session.close())
             .catch((error) => {
                 console.log("Error deleting event", error);
-                return Promise.reject("A database error occured");
+                return Promise.reject('DATABASE_ERROR');
             });
     },
 
@@ -43,7 +43,7 @@ module.exports = {
             })
             .catch((error) => {
                 console.log("Error adding description for event", error);
-                return Promise.reject("A database error occured");
+                return Promise.reject('DATABASE_ERROR');
             });
     },
 
@@ -54,7 +54,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
             if (chronoResults.length === 0) {
                 console.log("Invalid date");
-                reject(1);
+                reject('INVALID_DATE_ERROR');
                 return;
             }
             session
@@ -62,7 +62,12 @@ module.exports = {
                 .then((result) => {
                     const timezoneOffset = result.records[0].get('timezoneOffset');
                     chronoResults[0].start.assign('timezoneOffset', 60 * timezoneOffset);
-                    console.log("date is ", chronoResults[0].start.date().toString());
+                    const date = chronoResults[0].start.date();
+                    const now = new Date();
+                    if (date <= now) {
+                        reject('PAST_DATE_ERROR');
+                        return;
+                    }
                     return chronoResults[0].start.date().toString();
                 })
                 .then((formattedTime) => {
@@ -76,12 +81,12 @@ module.exports = {
                         })
                         .catch((error) => {
                             console.log("Error setting event remind time", error);
-                            reject(0);
+                            reject('DATABASE_ERROR');
                         })
                 })
                 .catch((error) => {
                     console.log("error at timezone query?", error);
-                    reject(0);
+                    reject('DATABASE_ERROR');
                 })
         })
 
@@ -125,12 +130,12 @@ module.exports = {
                     })
                     .catch((err) => {
                         console.error("Error scheduling event", err);
-                        return Promise.reject("A database error occured");
+                        return Promise.reject("DATABASE_ERROR");
                     })
             })
             .catch((err) => {
                 console.error("Error scheduling event", err);
-                return Promise.reject("A database error occured");
+                return Promise.reject('DATABASE_ERROR');
             })
     },
 

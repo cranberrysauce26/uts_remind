@@ -6,7 +6,7 @@ const send = require('../facebook/send');
 reminderData = {
     eventName: "event-name",
     eventDescription: "jhgjhgjh",
-    eventOwner: 765675765,
+    eventOwner: '765675765',
     subscribers: [
         {
             id: 87678687,

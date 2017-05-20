@@ -4,6 +4,8 @@ const send = require('../facebook/send');
 const user = require('../model/user');
 const event = require('../model/event');
 
+const apiai = require('apiai')(process.env.API_AI_CLIENT_ACCESS_TOKEN);
+
 const failure = require('./failure');
 
 function formatStringQuotes(text) {
@@ -26,7 +28,8 @@ module.exports = function (senderID, text, state) {
 const inputs = {
 
     DEFAULT: function (senderID, text) {
-        if (text==='add event') {
+
+         if (text==='add event') {
             console.log("add event");
             send.sendQuickReplies(senderID, 'add event?', [
                 {
@@ -36,7 +39,21 @@ const inputs = {
             ]);
             return;
         }
-        send.sendTextMessages(senderID, ["Sorry I am illiterate"]);
+
+        const ai = apiai.textRequest(text, {
+            sessionId: 'a_random_session_id'
+        });
+
+        ai.on('response', (response) => {
+            const responseText = response.result.fulfillment.speech;
+            send.sendTextMessages(senderID, [responseText]);
+        })
+
+        ai.on('error', (error) => {
+            send.sendTextMessages(senderID, ["Sorry I am illiterate"]);
+        })
+
+        ai.end();
     },
 
     SET_NAME_FOR_EVENT: function (senderID, text) {

@@ -68,12 +68,16 @@ module.exports = {
                         reject('PAST_DATE_ERROR');
                         return;
                     }
-                    return chronoResults[0].start.date().toString();
+                    // get the number of minutes since 1970 something. 6000 milliseconds in a minute
+                    // Javascript supports up to 10 digit integers. 
+                    // But the number of minutes is 9 digits right now so we're safe.
+                    console.log("minutes is", Math.floor(chronoResults[0].start.date().getTime() / 6000));
+                    return Math.floor(chronoResults[0].start.date().getTime() / 6000) ;
                 })
-                .then((formattedTime) => {
+                .then((minutes) => {
                     console.log("formattedTime is", formattedTime);
                     return session
-                        .run(`MATCH (e:Event) WHERE e.owner_id='${senderID}' AND e.scheduled=false SET e.remind_time='${formattedTime}' RETURN e`)
+                        .run(`MATCH (e:Event) WHERE e.owner_id='${senderID}' AND e.scheduled=false SET e.remind_time=${minutes} RETURN e`)
                         .then((result) => {
                             console.log("Set the event remind time. result.records[0] is", JSON.stringify(result.records[0]));
                             session.close();
@@ -120,7 +124,7 @@ module.exports = {
                     });
                 })
                 console.log("remindTime is", remindTime);
-                nodeSchedule.scheduleJob(new Date(remindTime), remind(remindData));
+                nodeSchedule.scheduleJob(new Date(remindTime*6000), remind(remindData));
             })
             .then(() => {
                 return session

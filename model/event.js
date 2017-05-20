@@ -59,7 +59,7 @@ module.exports = {
                 .then((result) => {
                     const timezoneOffset = result.records[0].get('timezoneOffset');
 
-                    if (chronoResults.start === undefined) {
+                    if (chronoResults.length === 0) {
                         console.log("Invalid date");
                         reject(1);
                         return;

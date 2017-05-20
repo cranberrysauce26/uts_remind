@@ -64,8 +64,10 @@ module.exports = {
                         reject(1);
                         return;
                     }
+                    console.log("Date before offset is", chronoResults[0].start.date() );
                     chronoResults[0].start.assign('timezoneOffset', 60*timezoneOffset);
-
+                    console.log("60*timezoneOffset is", 60*timezoneOffset);
+                    console.log("Date after offset is", chronoResults[0].start.date() );
                     return chronoResults[0].start.date().toString();
                 })
                 .then((formattedTime) => {

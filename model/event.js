@@ -62,14 +62,15 @@ module.exports = {
                 .then((result) => {
                     const timezoneOffset = result.records[0].get('timezoneOffset');
                     chronoResults[0].start.assign('timezoneOffset', 60 * timezoneOffset);
-                    
+                    console.log("date is ", chronoResults[0].start.date().toString());
                     return chronoResults[0].start.date().toString();
                 })
                 .then((formattedTime) => {
+                    console.log("formattedTime is", formattedTime);
                     return session
                         .run(`MATCH (e:Event) WHERE e.owner_id=${senderID} AND e.scheduled=false SET e.remind_time='${formattedTime}' RETURN e`)
                         .then((result) => {
-                            console.log("Set the event remind time");
+                            console.log("Set the event remind time. result.records[0] is", JSON.stringify(result.records[0]));
                             session.close();
                             resolve();
                         })

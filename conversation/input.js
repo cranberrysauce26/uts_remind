@@ -72,6 +72,7 @@ const inputs = {
         event
             .setDescription(senderID, text)
             .then(() => {
+                user.setInputState('DEFAULT');
                 send.sendQuickReplies(
                     senderID,
                     "Confirm event!",

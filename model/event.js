@@ -57,16 +57,14 @@ module.exports = {
             .run(`MATCH (u:User) WHERE u.facebook_id=${senderID} RETURN u.timezone_offset AS timezoneOffset`)
             .then((result) => {
                 const timezoneOffset = result.records[0].get('timezoneOffset');
-                chronoResults[0].start.assign('timezoneOffset', timezoneOffset);
-                console.log("date is ", JSON.stringify(chronoResults[0].start.date() ));
-                const datString = chronoResults[0].start.date().toString();
-                console.log("datString is", datString);
-                if (datString === "Invalid Date") {
-                    console.log("Recieved an invalid date");
-                    session.close();
+                
+                if (chronoResults.start===undefined) {
+                    console.log("Invalid date");
                     return Promise.reject(1);
                 }
-                return datString;
+                chronoResults[0].start.assign('timezoneOffset', timezoneOffset);
+
+                return chronoResults[0].start.date().toString();
             })
             .then((formattedTime) => {
                 return session

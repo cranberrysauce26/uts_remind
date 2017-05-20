@@ -88,7 +88,7 @@ const inputs = {
                     ]
                 );
             })
-            .catch(defaultFailure(senderID));
+            .catch(failure(senderID));
     }
 }
 

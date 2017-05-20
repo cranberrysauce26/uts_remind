@@ -33,7 +33,7 @@ module.exports = function (reminderData) {
                 sub.id,
                 (() => {
                     console.log("In anonymous function");
-                    if (sub.id===reminderData.eventOwner) {
+                    if (sub.id == reminderData.eventOwner) {
                         //
                         return [
                             `Hi ${sub.first_name}! Your event "${reminderData.eventName}" has been sent to all subscribers!`,

@@ -37,6 +37,16 @@ const failures = {
         console.log("triggering facebook error");
         send.sendTextMessages(senderID, ["A facebook error occured. Sorry :("]);
         user.setInputState(senderID, 'DEFAULT');
+    },
+
+    DUPLICATE_EVENT_NAME_ERROR: (senderID) => {
+        console.log("triggering duplicate event name error");
+        send.sendTextMessages(senderID, ["You already have an event with that name.", "Please enter a different name"]);
+    },
+
+    UNSCHEDULED_EVENT_ERROR: (senderID) => {
+        console.log("triggering unscheduled event error");
+        send.sendTextMessages(senderID, ["You have an event that you did not finish scheduling", "Please schedule it first"]);
     }
 
 }

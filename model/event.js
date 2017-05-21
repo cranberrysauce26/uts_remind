@@ -11,12 +11,28 @@ module.exports = {
         // Each creator has at most one event
         const session = driver.session();
         return session
-            .run(`MATCH (u:User) WHERE u.facebook_id='${senderID}' CREATE (e:Event {name: '${name}', owner_id: '${senderID}', scheduled: false})-[:Reminds]->(u) RETURN e`)
-            .then(() => {
-                console.log("Created event in event!");
+            .run(`
+                MATCH (u:User {facebook_id: '${senderID}'})-[:Owns]->(:Event {scheduled: FALSE} ) 
+                WITH count(*) AS numOpen, u
+                MATCH (u)-[:Owns]->(:Event {name: '${name}'})
+                WITH count(*) AS numSameName
+                FOREACH (_ IN CASE numOpen+numSameName WHEN 0 THEN [1] ELSE [] END | 
+                CREATE (u)-[:Owns]->(:Event {name: '${name}', scheduled: FALSE}) )
+                RETURN numOpen, numSameName
+            `)
+            .then( result => {
+                const numOpen = results.records[0].get('numOpen');
+                if (numOpen > 0) {
+                    return Promise.reject('UNSCHEDULED_EVENT_ERROR');
+                }
+                const numSameName = results.records[0].get('numSameName');
+                if (numSameName > 0) {
+                    return Promise.reject('DUPLICATE_EVENT_NAME_ERROR');
+                }
+                console.log("Succesfully created event in event!");
                 session.close();
             })
-            .catch((error) => {
+            .catch( error => {
                 console.log("Error creating event", error);
                 return Promise.reject('DATABASE_ERROR');
             });
@@ -25,9 +41,12 @@ module.exports = {
     deleteUnscheduledEvent: function (senderID) {
         const session = driver.session();
         return session
-            .run(`MATCH (e:Event) WHERE e.owner_id='${senderID}' DETACH DELETE e`)
+            .run(`
+                MATCH (:User {facebook_id: '${senderID}'}-[:Owns]->(e:Event {scheduled: FALSE})
+                DETACH DELETE e
+            `)
             .then(() => session.close())
-            .catch((error) => {
+            .catch( error => {
                 console.log("Error deleting event", error);
                 return Promise.reject('DATABASE_ERROR');
             });
@@ -36,12 +55,15 @@ module.exports = {
     setDescription: function (senderID, description) {
         const session = driver.session();
         return session
-            .run(`MATCH (e:Event) WHERE e.owner_id='${senderID}' AND e.scheduled=false SET e.description='${description}' RETURN e`)
+            .run(`
+                MATCH (:User {facebook_id: '${senderID}'}-[:Owns]->(e:Event {scheduled: FALSE}) 
+                SET e.description='${description}' 
+            `)
             .then(() => {
                 console.log("set the description in event!");
                 session.close();
             })
-            .catch((error) => {
+            .catch( error => {
                 console.log("Error adding description for event", error);
                 return Promise.reject('DATABASE_ERROR');
             });
@@ -52,44 +74,49 @@ module.exports = {
         var chronoResults = new chrono.parse(remindTime);
 
         return new Promise((resolve, reject) => {
+
             if (chronoResults.length === 0) {
                 console.log("Invalid date");
                 reject('INVALID_DATE_ERROR');
                 return;
             }
+
+            function getMinutes(result) {
+                const timezoneOffset = result.records[0].get('timezoneOffset');
+                chronoResults[0].start.assign('timezoneOffset', 60 * timezoneOffset);
+                const date = chronoResults[0].start.date();
+                const now = new Date();
+                if (date <= now) {
+                    reject('PAST_DATE_ERROR');
+                    return Promise.reject();
+                }
+                return Math.floor(chronoResults[0].start.date().getTime() / 6000);
+            }
+
+            function setRemindTime(minutes) {
+                return session
+                    .run(`
+                        MATCH (:User {facebook_id: '${senderID}'}-[:Owns]->(e:Event {scheduled: FALSE})
+                        SET e.remind_time=${minutes}
+                    `)
+                    .then(() => {
+                        session.close();
+                        resolve();
+                    })
+                    .catch((error) => {
+                        console.log("Error setting event remind time", error);
+                        reject('DATABASE_ERROR');
+                    })
+            }
+
             session
-                .run(`MATCH (u:User) WHERE u.facebook_id='${senderID}' RETURN u.timezone AS timezoneOffset`)
-                .then((result) => {
-                    const timezoneOffset = result.records[0].get('timezoneOffset');
-                    chronoResults[0].start.assign('timezoneOffset', 60 * timezoneOffset);
-                    const date = chronoResults[0].start.date();
-                    const now = new Date();
-                    if (date <= now) {
-                        reject('PAST_DATE_ERROR');
-                        return Promise.reject('CONTINUE');
-                    }
-                    // get the number of minutes since 1970 something. 6000 milliseconds in a minute
-                    // Javascript supports up to 10 digit integers. 
-                    // But the number of minutes is 9 digits right now so we're safe.
-                    console.log("minutes is", Math.floor(chronoResults[0].start.date().getTime() / 6000));
-                    return Math.floor(chronoResults[0].start.date().getTime() / 6000) ;
-                })
-                .then((minutes) => {
-                    console.log("Minutes is", minutes);
-                    return session
-                        .run(`MATCH (e:Event) WHERE e.owner_id='${senderID}' AND e.scheduled=false SET e.remind_time=${minutes} RETURN e`)
-                        .then((result) => {
-                            console.log("Set the event remind time. result.records[0] is", JSON.stringify(result.records[0]));
-                            session.close();
-                            resolve();
-                        })
-                        .catch((error) => {
-                            console.log("Error setting event remind time", error);
-                            reject('DATABASE_ERROR');
-                        })
-                })
+                .run(`
+                    MATCH (u:User {facebook_id: '${senderID}'}) 
+                    RETURN u.timezone AS timezoneOffset
+                `)
+                .then(getMinutes)
+                .then(setRemindTime)
                 .catch((error) => {
-                    if (error==='CONTINUE') return;
                     console.log("error at timezone query?", error);
                     reject('DATABASE_ERROR');
                 })
@@ -102,43 +129,28 @@ module.exports = {
         const session = driver.session();
 
         return session
-            .run(`MATCH (e:Event)-[:Reminds]->(u:User) WHERE e.owner_id='${senderID}' AND e.scheduled=false RETURN e.remind_time AS remindTime, e.name AS eventName, e.description AS eventDescription, e.owner_id AS eventOwner, u.facebook_id AS userID, u.first_name AS firstName`)
-            .then((result) => {
-                console.log("Result is", JSON.stringify(result));
-                var remindTime;
-
-                var remindData = {
-                    subscribers: []
-                };
-
-                result.records.forEach((q) => {
-                                    
-                    console.log("q is", q);
-                    console.log(q.get('userID'));
-                    remindTime = remindTime || q.get('remindTime');
-                    remindData.eventName = remindData.eventName || q.get('eventName');
-                    remindData.eventDescription = remindData.eventDescription || q.get('eventDescription');
-                    remindData.eventOwner = remindData.eventOwner || q.get('eventOwner');
-                    remindData.subscribers.push({
-                        id: q.get('userID'),
-                        first_name: q.get('firstName')
-                    });
-                })
+            .run(`
+                MATCH (:User {facebook_id: '${senderID}'})-[:Owns]->(e:Event {scheduled: FALSE})-[:Reminds]->(u:User)
+                WITH {
+                    eventName: e.name, 
+                    eventDescription: e.description,
+                    eventOwner: '${senderID}',
+                    subscribers: COLLECT({
+                        id: u.facebook_id,
+                        first_name: u.first_name
+                    })
+                } AS reminderData, e 
+                SET e.scheduled=TRUE
+                RETURN reminderData, e.remind_time AS remindTime
+            `)
+            .then(result => {
+                const reminderData = result.records[0].get('reminderData');
+                console.log("ReminderData is", JSON.parse(reminderData));
+                const remindTime = result.records[0].get('remindTime');
                 console.log("remindTime is", remindTime);
-                nodeSchedule.scheduleJob(new Date(remindTime*6000), remind(remindData));
+                nodeSchedule.scheduleJob(new Date(remindTime * 6000), remind(reminderData));
             })
-            .then(() => {
-                return session
-                    .run(`MATCH (e:Event) WHERE e.owner_id='${senderID}' AND e.scheduled=false SET e.scheduled=true RETURN e.scheduled`)
-                    .then(() => {
-                        session.close();
-                    })
-                    .catch((err) => {
-                        console.error("Error scheduling event", err);
-                        return Promise.reject("DATABASE_ERROR");
-                    })
-            })
-            .catch((err) => {
+            .catch( err => {
                 console.error("Error scheduling event", err);
                 return Promise.reject('DATABASE_ERROR');
             })

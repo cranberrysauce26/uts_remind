@@ -20,17 +20,24 @@ module.exports = {
                     MERGE (v:Event {name: 'name', scheduled: FALSE})
                     MERGE (u)-[:Owns]->(v) 
                     MERGE (v)-[:Reminds]-(u)
-                    RETURN numSameName, numOpen
+                    RETURN CASE numSameName 
+                        WHEN 0 THEN FALSE
+                        ELSE TRUE
+                    END AS hasDuplicateName,
+                    RETURN CASE numOpen
+                        WHEN 0 THEN FALSE
+                        ELSE TRUE
+                    END AS hasUnscheduledEvent
                 `)
                 .then(result => {
-                    const numOpen = result.records[0].get('numOpen');
-                    console.log("numOpen is", numOpen);
-                    if (numOpen.isPositive()) {
+                    const hasDuplicateName = result.records[0].get('hasDuplicateName');
+                    console.log("hasDuplicateName is", hasDuplicateName);
+                    if (hasDuplicateName) {
                         return reject('UNSCHEDULED_EVENT_ERROR');
                     }
-                    const numSameName = result.records[0].get('numSameName');
-                    console.log("numSameName is", numSameName);
-                    if (numSameName.isPositive()) {
+                    const hasUnscheduledEvent = result.records[0].get('hasUnscheduledEvent');
+                    console.log("hasUnscheduledEvent is", hasUnscheduledEvent);
+                    if (hasUnscheduledEvent) {
                         return reject('DUPLICATE_EVENT_NAME_ERROR');
                     }
                     console.log("Succesfully created event in event!");

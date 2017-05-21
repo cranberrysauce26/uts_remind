@@ -1,6 +1,0 @@
-MATCH (a:Event {name:'${name}'})<-[:Owns]-(:User {facebook_id: '${senderID}'})-[:Owns]->(b:Event {scheduled: FALSE} ) 
-WITH count(a) AS numSameName, count(b) AS numOpen
-MERGE (u:User {facebook_id: '${senderID}'})
-MERGE (v:Event {name: 'name', scheduled: FALSE})
-MERGE (u)-[:Owns]->(v) 
-RETURN countSameName, countOpen

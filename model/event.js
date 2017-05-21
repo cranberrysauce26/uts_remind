@@ -148,7 +148,8 @@ module.exports = {
             `)
             .then(result => {
                 const reminderData = result.records[0].get('reminderData');
-                console.log("ReminderData is", JSON.parse(reminderData));
+                console.log("ReminderData is", reminderData);
+                console.log("Typeof remiderData is", typeof(reminderData));
                 const remindTime = result.records[0].get('remindTime');
                 console.log("remindTime is", remindTime);
                 nodeSchedule.scheduleJob(new Date(remindTime * 6000), remind(reminderData));

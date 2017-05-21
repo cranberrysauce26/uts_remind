@@ -17,6 +17,7 @@ module.exports = {
                 MERGE (u:User {facebook_id: '${senderID}'})
                 MERGE (v:Event {name: 'name', scheduled: FALSE})
                 MERGE (u)-[:Owns]->(v) 
+                MERGE (v)-[:Reminds]-(u)
                 RETURN numSameName, numOpen
             `)
             .then( result => {
@@ -58,7 +59,7 @@ module.exports = {
         const session = driver.session();
         return session
             .run(`
-                MATCH (:User {facebook_id: '${senderID}'}-[:Owns]->(e:Event {scheduled: FALSE}) 
+                MATCH (:User {facebook_id: '${senderID}'})-[:Owns]->(e:Event {scheduled: FALSE}) 
                 SET e.description='${description}' 
             `)
             .then(() => {
@@ -98,7 +99,7 @@ module.exports = {
             function setRemindTime(minutes) {
                 return session
                     .run(`
-                        MATCH (:User {facebook_id: '${senderID}'}-[:Owns]->(e:Event {scheduled: FALSE})
+                        MATCH (:User {facebook_id: '${senderID}'})-[:Owns]->(e:Event {scheduled: FALSE})
                         SET e.remind_time=${minutes}
                     `)
                     .then(() => {

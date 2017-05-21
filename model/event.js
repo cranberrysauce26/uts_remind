@@ -12,22 +12,21 @@ module.exports = {
         const session = driver.session();
         return session
             .run(`
-                MATCH (u:User {facebook_id: '${senderID}'})-[:Owns]->(:Event {scheduled: FALSE} ) 
-                WITH count(*) AS numOpen, u
-                MATCH (u)-[:Owns]->(:Event {name: '${name}'})
-                WITH count(*) AS numSameName, numOpen, u
-                FOREACH (_ IN CASE numOpen+numSameName WHEN 0 THEN [1] ELSE [] END | 
-                CREATE (u)-[:Owns]->(:Event {name: '${name}', scheduled: FALSE}) )
-                RETURN numOpen, numSameName
+                MATCH (a:Event {name:'${name}'})<-[:Owns]-(:User {facebook_id: '${senderID}'})-[:Owns]->(b:Event {scheduled: FALSE} ) 
+                WITH count(a) AS numSameName, count(b) AS numOpen
+                MERGE (u:User {facebook_id: '${senderID}'})
+                MERGE (v:Event {name: 'name', scheduled: FALSE})
+                MERGE (u)-[:Owns]->(v) 
+                RETURN numSameName, numOpen
             `)
             .then( result => {
                 console.log("result is", JSON.stringify(result) );
-                // const numOpen = result.records[0].get('numOpen');
+                const numOpen = result.records[0].get('numOpen');
                 console.log("numOpen is", numOpen);
                 if (numOpen > 0) {
                     return Promise.reject('UNSCHEDULED_EVENT_ERROR');
                 }
-                // const numSameName = result.records[0].get('numSameName');
+                const numSameName = result.records[0].get('numSameName');
                 console.log("numSameName is", numSameName);
                 if (numSameName > 0) {
                     return Promise.reject('DUPLICATE_EVENT_NAME_ERROR');

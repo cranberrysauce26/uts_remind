@@ -21,13 +21,13 @@ module.exports = {
                 RETURN numOpen, numSameName
             `)
             .then( result => {
-                
-                const numOpen = result.records[0].get('numOpen');
+                console.log("result is", JSON.stringify(result) );
+                // const numOpen = result.records[0].get('numOpen');
                 console.log("numOpen is", numOpen);
                 if (numOpen > 0) {
                     return Promise.reject('UNSCHEDULED_EVENT_ERROR');
                 }
-                const numSameName = result.records[0].get('numSameName');
+                // const numSameName = result.records[0].get('numSameName');
                 console.log("numSameName is", numSameName);
                 if (numSameName > 0) {
                     return Promise.reject('DUPLICATE_EVENT_NAME_ERROR');

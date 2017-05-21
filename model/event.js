@@ -14,23 +14,26 @@ module.exports = {
         return new Promise((resolve, reject) => {
             session
                 .run(`
-                    MATCH (a:Event {name:'${name}'})<-[:Owns]-(:User {facebook_id: '${senderID}'})-[:Owns]->(b:Event {scheduled: FALSE} ) 
+                    MATCH (:User {facebook_id: '${senderID}'})-[:Owns]->(b:Event {scheduled: FALSE} ) 
+                    MATCH (:User {facebook_id: '${senderID}'})-[:Owns]->(a:Event {name: '${name}'} )
                     WITH count(a) AS numSameName, count(b) AS numOpen
                     MERGE (u:User {facebook_id: '${senderID}'})
-                    MERGE (v:Event {name: 'name', scheduled: FALSE})
+                    MERGE (v:Event {name: '${name}', scheduled: FALSE})
                     MERGE (u)-[:Owns]->(v) 
                     MERGE (v)-[:Reminds]-(u)
-                    RETURN numSameName, numOpen
+                    RETURN 
+                        numSameName > 0 AS hasDuplicateName, 
+                        numOpen > 0 AS hasUnscheduledEvent
                 `)
                 .then(result => {
-                    const numOpen = result.records[0].get('numOpen');
-                    console.log("numOpen is", numOpen);
-                    if (!numOpen.isZero()) {
+                    const hasUnscheduledEvent = result.records[0].get('hasUnscheduledEvent');
+                    console.log("hasUnscheduledEvent is", hasUnscheduledEvent);
+                    if (hasUnscheduledEvent) {
                         return reject('UNSCHEDULED_EVENT_ERROR');
                     }
-                    const numSameName = result.records[0].get('numSameName');
-                    console.log("numSameName is", numSameName);
-                    if (!numSameName.isZero()) {
+                    const hasDuplicateName = result.records[0].get('hasDuplicateName');
+                    console.log("hasDuplicateName is", hasDuplicateName);
+                    if (hasDuplicateName) {
                         return reject('DUPLICATE_EVENT_NAME_ERROR');
                     }
                     console.log("Succesfully created event in event!");

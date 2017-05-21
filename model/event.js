@@ -18,12 +18,13 @@ module.exports = {
                     MATCH (:User {facebook_id: '${senderID}'})-[:Owns]->(a:Event {name: '${name}'} )
                     WITH count(a) AS numSameName, count(b) AS numOpen
                     MERGE (u:User {facebook_id: '${senderID}'})
-                    MERGE (v:Event {name: '${name}', scheduled: FALSE})
+                    MERGE (v:Event {name: '${name}'})
+                    ON CREATE SET v.scheduled=FALSE
                     MERGE (u)-[:Owns]->(v) 
                     MERGE (v)-[:Reminds]-(u)
                     RETURN 
-                        numSameName > 0 AS hasDuplicateName, 
-                        numOpen > 0 AS hasUnscheduledEvent
+                        (SUM(numSameName) > 0) AS hasDuplicateName, 
+                        (SUM(numOpen) > 0) AS hasUnscheduledEvent
                 `)
                 .then(result => {
                     const hasUnscheduledEvent = result.records[0].get('hasUnscheduledEvent');

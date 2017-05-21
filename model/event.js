@@ -8,37 +8,40 @@ const chrono = require('chrono-node');
 module.exports = {
 
     createNewEvent: function (senderID, name) {
-        // Each creator has at most one event
+
         const session = driver.session();
-        return session
-            .run(`
-                MATCH (a:Event {name:'${name}'})<-[:Owns]-(:User {facebook_id: '${senderID}'})-[:Owns]->(b:Event {scheduled: FALSE} ) 
-                WITH count(a) AS numSameName, count(b) AS numOpen
-                MERGE (u:User {facebook_id: '${senderID}'})
-                MERGE (v:Event {name: 'name', scheduled: FALSE})
-                MERGE (u)-[:Owns]->(v) 
-                MERGE (v)-[:Reminds]-(u)
-                RETURN numSameName, numOpen
-            `)
-            .then( result => {
-                console.log("result is", JSON.stringify(result) );
-                const numOpen = result.records[0].get('numOpen');
-                console.log("numOpen is", numOpen);
-                if (numOpen > 0) {
-                    return Promise.reject('UNSCHEDULED_EVENT_ERROR');
-                }
-                const numSameName = result.records[0].get('numSameName');
-                console.log("numSameName is", numSameName);
-                if (numSameName > 0) {
-                    return Promise.reject('DUPLICATE_EVENT_NAME_ERROR');
-                }
-                console.log("Succesfully created event in event!");
-                session.close();
-            })
-            .catch( error => {
-                console.log("Error creating event", error);
-                return Promise.reject('DATABASE_ERROR');
-            });
+
+        return new Promise((resolve, reject) => {
+            session
+                .run(`
+                    MATCH (a:Event {name:'${name}'})<-[:Owns]-(:User {facebook_id: '${senderID}'})-[:Owns]->(b:Event {scheduled: FALSE} ) 
+                    WITH count(a) AS numSameName, count(b) AS numOpen
+                    MERGE (u:User {facebook_id: '${senderID}'})
+                    MERGE (v:Event {name: 'name', scheduled: FALSE})
+                    MERGE (u)-[:Owns]->(v) 
+                    MERGE (v)-[:Reminds]-(u)
+                    RETURN numSameName, numOpen
+                `)
+                .then(result => {
+                    const numOpen = result.records[0].get('numOpen');
+                    console.log("numOpen is", numOpen);
+                    if (numOpen.isPositive()) {
+                        return reject('UNSCHEDULED_EVENT_ERROR');
+                    }
+                    const numSameName = result.records[0].get('numSameName');
+                    console.log("numSameName is", numSameName);
+                    if (numSameName.isPositive()) {
+                        return reject('DUPLICATE_EVENT_NAME_ERROR');
+                    }
+                    console.log("Succesfully created event in event!");
+                    session.close();
+                    resolve();
+                })
+                .catch(error => {
+                    console.log("Error creating event", error);
+                    reject('DATABASE_ERROR');
+                });
+        })
     },
 
     deleteUnscheduledEvent: function (senderID) {
@@ -49,7 +52,7 @@ module.exports = {
                 DETACH DELETE e
             `)
             .then(() => session.close())
-            .catch( error => {
+            .catch(error => {
                 console.log("Error deleting event", error);
                 return Promise.reject('DATABASE_ERROR');
             });
@@ -66,7 +69,7 @@ module.exports = {
                 console.log("set the description in event!");
                 session.close();
             })
-            .catch( error => {
+            .catch(error => {
                 console.log("Error adding description for event", error);
                 return Promise.reject('DATABASE_ERROR');
             });
@@ -119,7 +122,7 @@ module.exports = {
                 `)
                 .then(getMinutes)
                 .then(setRemindTime)
-                .catch( error => {
+                .catch(error => {
                     console.log("error at timezone query?", error);
                     reject('DATABASE_ERROR');
                 })
@@ -149,12 +152,12 @@ module.exports = {
             .then(result => {
                 const reminderData = result.records[0].get('reminderData');
                 console.log("ReminderData is", reminderData);
-                console.log("Typeof remiderData is", typeof(reminderData));
+                console.log("Typeof remiderData is", typeof (reminderData));
                 const remindTime = result.records[0].get('remindTime');
                 console.log("remindTime is", remindTime);
                 nodeSchedule.scheduleJob(new Date(remindTime * 6000), remind(reminderData));
             })
-            .catch( err => {
+            .catch(err => {
                 console.error("Error scheduling event", err);
                 return Promise.reject('DATABASE_ERROR');
             })

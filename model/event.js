@@ -15,17 +15,20 @@ module.exports = {
                 MATCH (u:User {facebook_id: '${senderID}'})-[:Owns]->(:Event {scheduled: FALSE} ) 
                 WITH count(*) AS numOpen, u
                 MATCH (u)-[:Owns]->(:Event {name: '${name}'})
-                WITH count(*) AS numSameName
+                WITH count(*) AS numSameName, numOpen, u
                 FOREACH (_ IN CASE numOpen+numSameName WHEN 0 THEN [1] ELSE [] END | 
                 CREATE (u)-[:Owns]->(:Event {name: '${name}', scheduled: FALSE}) )
                 RETURN numOpen, numSameName
             `)
             .then( result => {
+                
                 const numOpen = results.records[0].get('numOpen');
+                console.log("numOpen is", numOpen);
                 if (numOpen > 0) {
                     return Promise.reject('UNSCHEDULED_EVENT_ERROR');
                 }
                 const numSameName = results.records[0].get('numSameName');
+                console.log("numSameName is", numSameName);
                 if (numSameName > 0) {
                     return Promise.reject('DUPLICATE_EVENT_NAME_ERROR');
                 }

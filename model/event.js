@@ -22,12 +22,12 @@ module.exports = {
             `)
             .then( result => {
                 
-                const numOpen = results.records[0].get('numOpen');
+                const numOpen = result.records[0].get('numOpen');
                 console.log("numOpen is", numOpen);
                 if (numOpen > 0) {
                     return Promise.reject('UNSCHEDULED_EVENT_ERROR');
                 }
-                const numSameName = results.records[0].get('numSameName');
+                const numSameName = result.records[0].get('numSameName');
                 console.log("numSameName is", numSameName);
                 if (numSameName > 0) {
                     return Promise.reject('DUPLICATE_EVENT_NAME_ERROR');
@@ -119,7 +119,7 @@ module.exports = {
                 `)
                 .then(getMinutes)
                 .then(setRemindTime)
-                .catch((error) => {
+                .catch( error => {
                     console.log("error at timezone query?", error);
                     reject('DATABASE_ERROR');
                 })

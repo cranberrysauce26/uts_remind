@@ -14,9 +14,9 @@ module.exports = {
         return new Promise((resolve, reject) => {
             session
                 .run(`
-                    MATCH (:User {facebook_id: '${senderID}'})-[:Owns]->(b:Event {scheduled: FALSE} ) 
+                    OPTIONAL MATCH (:User {facebook_id: '${senderID}'})-[:Owns]->(b:Event {scheduled: FALSE} ) 
                     WITH COUNT(b) AS numOpen
-                    MATCH (:User {facebook_id: '${senderID}'})-[:Owns]->(a:Event {name: '${name}'} )
+                    OPTIONAL MATCH (:User {facebook_id: '${senderID}'})-[:Owns]->(a:Event {name: '${name}'} )
                     WITH COUNT(a) AS numSameName, numOpen
                     MERGE (u:User {facebook_id: '${senderID}'})
                     MERGE (v:Event {name: '${name}'})

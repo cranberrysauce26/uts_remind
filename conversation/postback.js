@@ -84,7 +84,7 @@ const postbacks = {
                         payload: 'DESCRIBE_EVENT?'+eventName
                     });
                 });
-                send.sendButtons(senderID, 'Here are the events in the coming week. Tap to get a description')
+                send.sendButtons(senderID, 'Here are the events in the coming week. Tap to get a description', buttons)
             })
     },
 

@@ -76,6 +76,11 @@ const postbacks = {
             .listAllEventsInComingWeek()
             .then( (eventNames) => {
                 console.log("In then with eventNames", eventNames);
+
+                if (eventNames.length === 0) {
+                    // there are no upcoming events
+                    send.sendTextMessages(senderID, ["There are no events in the next week"]);
+                }
                 // Send buttons.
                 let buttons = [];
                 eventNames.forEach( eventName => {

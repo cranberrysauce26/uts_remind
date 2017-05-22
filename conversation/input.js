@@ -45,7 +45,7 @@ const inputs = {
             send.sendQuickReplies(senderID, 'list events?', [
                 {
                     text: "List events within a week",
-                    payload: "LIST_EVENTS_IN_COMING_WEEK"
+                    payload: "LIST_ALL_EVENTS_IN_COMING_WEEK"
                 }
             ]);
             return;

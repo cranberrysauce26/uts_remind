@@ -172,12 +172,28 @@ module.exports = {
 //#endregion CREATE
 
 //#region LIST
-    listAllEventsInComingWeek: function() {
+    listEvents: function(time) {
         console.log("listing all events in coming week in event");
         const session = driver.session();
         const now = new Date();
         const minutesNow = Math.floor( now.getTime()/60000 );
-        const nextWeek = minutesNow+10080; // 10080 = 7 days * 24 hours/day * 60 min/hour
+        let nextWeek;
+
+        switch (time) {
+            case 'WEEK':
+                nextWeek = minutesNow+7*24*60;
+                break;
+            case 'MONTH':
+                nextWeek = minutesNow+7*24*60*4;
+                break;
+            case 'YEAR':
+                nextWeek = minutesNow+7*24*60*365;
+                break;
+            default:
+                // Week by default
+                nextWeek = minutesNow+7*24*60;
+        }
+        
         return session
             .run(`
                 MATCH (e:Event {scheduled: TRUE})

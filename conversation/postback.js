@@ -11,7 +11,7 @@ module.exports = function (senderID, payload) {
     if (queryIndex !== -1) {
         let command = payload.substring(0, queryIndex);
         console.log("command is", command);
-        let query = payload.substring(queryIndex+1);
+        let query = payload.substring(queryIndex + 1);
         console.log("query is", query);
         return postbacks[command](senderID, query);
     }
@@ -69,27 +69,54 @@ const postbacks = {
             })
             .catch(failure(senderID));
     },
-    
-    LIST_ALL_EVENTS_IN_COMING_WEEK: function (senderID) {
+
+    LIST_EVENTS: function (senderID, time) {
         console.log("Listing events in coming week");
         event
-            .listAllEventsInComingWeek()
-            .then( (eventNames) => {
+            .listEvents(time)
+            .then((eventNames) => {
                 console.log("In then with eventNames", eventNames);
-
-                if (eventNames.length === 0) {
-                    // there are no upcoming events
-                    send.sendTextMessages(senderID, ["There are no events in the next week"]);
+                let t, n, N;
+                switch (time) {
+                    case 'WEEK':
+                        t = 'week';
+                        n = 'month';
+                        N = 'MONTH';
+                        break;
+                    case 'MONTH':
+                        t = 'month';
+                        n = 'year';
+                        N = 'YEAR';
+                        break;
+                    case 'YEAR':
+                        t = 'year';
+                        n = null;
+                        N = null;
+                        break;
+                    default:
+                        t = 'week';
+                        n = 'month';
+                        N = 'MONTH';
                 }
-                // Send buttons.
+                if (eventNames.length === 0) {
+                    send.sendTextMessages(senderID, ["There are no events in the next " + t]);
+                    return;
+                }
                 let buttons = [];
-                eventNames.forEach( eventName => {
+                eventNames.forEach(eventName => {
                     buttons.push({
                         text: eventName,
-                        payload: 'DESCRIBE_EVENT?'+eventName
+                        payload: 'DESCRIBE_EVENT?' + eventName
                     });
                 });
-                send.sendButtons(senderID, 'Here are the events in the coming week. Tap to get a description', buttons)
+                if (n !== null) {
+                    buttons.push({
+                        text: 'Tap for events in the next '+n,
+                        payload: 'LIST_EVENTS?'+N
+                    });
+                }
+
+                send.sendButtons(senderID, 'Here are the events in the coming ' + t + '. Tap to get a description', buttons)
             })
     },
 
@@ -97,16 +124,16 @@ const postbacks = {
         console.log("In describe event with event name", eventName);
         event
             .getDescription(eventName)
-            .then( description => {
+            .then(description => {
                 console.log("got description", description);
                 send.sendTextMessages(
-                    senderID, 
-                    ["Here's the description for event "+eventName, description], 
+                    senderID,
+                    ["Here's the description for event " + eventName, description],
                     () => {
                         send.sendQuickReplies(senderID, 'Schedule this event', [
                             {
                                 text: 'Schedule',
-                                payload: 'SUBSCRIBE_TO_EVENT?'+eventName
+                                payload: 'SUBSCRIBE_TO_EVENT?' + eventName
                             },
                             {
                                 text: 'Cancel',
@@ -122,7 +149,7 @@ const postbacks = {
         console.log("adding user to event");
         event
             .addUserToEvent(senderID, eventName)
-            .then( () => {
+            .then(() => {
                 send.sendTextMessages(senderID, ["You've been added to the event!"]);
             })
             .catch(failure(senderID));

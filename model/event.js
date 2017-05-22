@@ -102,7 +102,7 @@ module.exports = {
                     reject('PAST_DATE_ERROR');
                     return Promise.reject();
                 }
-                return Math.floor(chronoResults[0].start.date().getTime() / 6000);
+                return Math.floor(chronoResults[0].start.date().getTime() / 60000);
             }
 
             function setRemindTime(minutes) {
@@ -161,7 +161,7 @@ module.exports = {
                 console.log("Typeof remiderData is", typeof (reminderData));
                 const remindTime = result.records[0].get('remindTime');
                 console.log("remindTime is", remindTime);
-                nodeSchedule.scheduleJob(new Date(remindTime * 6000), remind(reminderData));
+                nodeSchedule.scheduleJob(new Date(remindTime * 60000), remind(reminderData));
             })
             .catch(err => {
                 console.error("Error scheduling event", err);
@@ -176,7 +176,7 @@ module.exports = {
         console.log("listing all events in coming week in event");
         const session = driver.session();
         const now = new Date();
-        const minutesNow = Math.floor( now.getTime()/6000 );
+        const minutesNow = Math.floor( now.getTime()/60000 );
         const nextWeek = minutesNow+10080; // 10080 = 7 days * 24 hours/day * 60 min/hour
         return session
             .run(`
@@ -187,6 +187,7 @@ module.exports = {
                 RETURN COLLECT(e.name) AS eventNames
             `)
             .then( result => {
+                console.log("result for coming events is", result);
                 session.close();
                 return result.records[0].get('eventNames');
             })
@@ -221,6 +222,8 @@ module.exports = {
                     OPTIONAL MATCH 
                     (e:Event {name: '${eventName}'})-[:Reminds]->(u:User {facebook_id: '${senderID}'})
                     WITH COUNT(*) AS num, e, u
+                    MERGE (e)
+                    MERGE (u)
                     MERGE (e)-[:Reminds]->(u)
                     RETURN (num > 0) AS alreadySubscribed
                 `)

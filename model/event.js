@@ -220,10 +220,10 @@ module.exports = {
             session
                 .run(`
                     OPTIONAL MATCH 
-                    (e:Event {name: '${eventName}'})-[:Reminds]->(u:User {facebook_id: '${senderID}'})
-                    WITH COUNT(*) AS num, e, u
-                    MERGE (e)
-                    MERGE (u)
+                    (:Event {name: '${eventName}'})-[:Reminds]->(:User {facebook_id: '${senderID}'})
+                    WITH COUNT(*) AS num
+                    MERGE (e:Event {name: '${eventName}'})
+                    MERGE (u:User {facebook_id: '${senderID}'})
                     MERGE (e)-[:Reminds]->(u)
                     RETURN (num > 0) AS alreadySubscribed
                 `)
@@ -236,7 +236,7 @@ module.exports = {
                 })
                 .catch( err => {
                     console.log("error subscribing to event", err);
-                    return Promise.reject('DATABASE_ERROR');
+                    reject('DATABASE_ERROR');
                 })
         })
 

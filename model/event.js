@@ -220,12 +220,12 @@ module.exports = {
             session
                 .run(`
                     OPTIONAL MATCH 
-                    (:Event {name: '${eventName}'})-[:Reminds]->(:User {facebook_id: '${senderID}'})
-                    WITH COUNT(*) AS num
+                    (:Event {name: '${eventName}'})-[r:Reminds]->(:User {facebook_id: '${senderID}'})
+                    WITH r IS NOT NULL AS alreadySubscribed
                     MERGE (e:Event {name: '${eventName}'})
                     MERGE (u:User {facebook_id: '${senderID}'})
                     MERGE (e)-[:Reminds]->(u)
-                    RETURN (num > 0) AS alreadySubscribed
+                    RETURN alreadySubscribed
                 `)
                 .then( result => result.records[0].get('alreadySubscribed'))
                 .then( alreadySubscribed => {

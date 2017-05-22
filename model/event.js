@@ -188,7 +188,7 @@ module.exports = {
             `)
             .then( result => {
                 session.close();
-                return result.records[0].get('events');
+                return result.records[0].get('eventNames');
             })
             .catch( err => {
                 console.log("list all events in coming week error", err);

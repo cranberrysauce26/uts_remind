@@ -70,6 +70,11 @@ const postbacks = {
             .catch(failure(senderID));
     },
 
+    LIST_EVENTS_IN_COMING_WEEK: function (senderID) {
+        console.log("REcieved a postback list events");
+        return;
+    },
+
     LIST_ALL_EVENTS_IN_COMING_WEEK: function (senderID) {
         console.log("Listing events in coming week");
         event

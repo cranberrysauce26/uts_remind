@@ -40,6 +40,17 @@ const inputs = {
             return;
         }
 
+        if (text==='list events') {
+            console.log("listing events");
+            send.sendQuickReplies(senderID, 'list events?', [
+                {
+                    text: "List events within a week",
+                    payload: "LIST_EVENTS_IN_COMING_WEEK"
+                }
+            ]);
+            return;
+        }
+
         const ai = apiai.textRequest(text, {
             sessionId: 'a_random_session_id'
         });

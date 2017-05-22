@@ -7,6 +7,7 @@ const chrono = require('chrono-node');
 
 module.exports = {
 
+//#region CREATE
     createNewEvent: function (senderID, name) {
 
         const session = driver.session();
@@ -16,7 +17,7 @@ module.exports = {
                 .run(`
                     OPTIONAL MATCH (:User {facebook_id: '${senderID}'})-[:Owns]->(b:Event {scheduled: FALSE} ) 
                     WITH COUNT(b) AS numOpen
-                    OPTIONAL MATCH (:User {facebook_id: '${senderID}'})-[:Owns]->(a:Event {name: '${name}'} )
+                    OPTIONAL MATCH (a:Event {name: '${name}'})
                     WITH COUNT(a) AS numSameName, numOpen
                     MERGE (u:User {facebook_id: '${senderID}'})
                     MERGE (v:Event {name: '${name}'})
@@ -168,6 +169,76 @@ module.exports = {
             })
     },
 
+//#endregion CREATE
+
+//#region LIST
+    listAllEventsInComingWeek: function() {
+        console.log("listing all events in coming week in event");
+        const session = driver.session();
+        const now = new Date();
+        const minutesNow = Math.floor( now.getTime()/6000 );
+        const nextWeek = minutesNow+10080; // 10080 = 7 days * 24 hours/day * 60 min/hour
+        return session
+            .run(`
+                MATCH (e:Event {scheduled: TRUE})
+                WITH e 
+                ORDER BY e.remind_time ASC
+                WHERE e.remind_time > ${minutesNow} AND e.remind_time < ${nextWeek}
+                RETURN COLLECT(e.name) AS eventNames
+            `)
+            .then( result => {
+                session.close();
+                return result.records[0].get('events');
+            })
+            .catch( err => {
+                console.log("list all events in coming week error", err);
+                return Promise.reject('DATABASE_ERROR');
+            })
+    },
+
+    getDescription: function(eventName) {
+        const session = driver.session();
+        return session
+            .run(`
+                MATCH (e:Event {name: '${eventName}'})
+                RETURN e.description AS description
+            `)
+            .then( result => {
+                session.close();
+                return result.records[0].get('description');
+            })
+            .catch( err => {
+                console.log("get description error", err);
+                return Promise.reject('DATABASE_ERROR');
+            })
+    },
+
+    addUserToEvent: function (senderID, eventName) {
+        const session = driver.session();
+        return new Promise( (resolve, reject) => {
+            session
+                .run(`
+                    OPTIONAL MATCH 
+                    (e:Event {name: '${eventName}'})-[:Reminds]->(u:User {facebook_id: '${senderID}'})
+                    WITH COUNT(*) AS num, e, u
+                    MERGE (e)-[:Reminds]->(u)
+                    RETURN (num > 0) AS alreadySubscribed
+                `)
+                .then( result => result.records[0].get('alreadySubscribed'))
+                .then( alreadySubscribed => {
+                    if (alreadySubscribed) {
+                        reject('ALREADY_SUBSCRIBED_TO_EVENT_ERROR')
+                    }
+                    session.close();
+                })
+                .catch( err => {
+                    console.log("error subscribing to event", err);
+                    return Promise.reject('DATABASE_ERROR');
+                })
+        })
+
+    }
+//#endregion LIST
 }
 
 

@@ -42,21 +42,7 @@ module.exports =
                     return new Promise.reject('DATABASE_ERROR');
                 });
         },
-
-        futureEvents: (id) => {
-            var futureEvents = [];
-            return;
-            // session 
-            //     .run("match all events that remind user with id")
-            //     .then(function (result) {
-
-            //     })
-            //     .catch(function (error) {
-            //         return false;
-            //     });
-            // You might have to do this twice. For groups right?
-        },
-
+        
         getInputState: (id) => {
             console.log("In getInputState");
             const session = driver.session();

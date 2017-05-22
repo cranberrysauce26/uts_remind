@@ -17,36 +17,41 @@ module.exports = (senderID) => {
 
 const failures = {
 
-    DATABASE_ERROR: (senderID) => {
+    DATABASE_ERROR: senderID => {
         console.log("Triggering databse error");
         send.sendTextMessages(senderID, ["Sorry a database error occured."]);
         user.setInputState(senderID, 'DEFAULT');
     },
 
-    INVALID_DATE_ERROR: (senderID) => {
+    INVALID_DATE_ERROR: senderID => {
         console.log("Triggering invalid date error");
         send.sendTextMessages(senderID, ["Please enter a valid date. For example, you can say May 4 at 3pm, or Today at 5pm"]);
     },
 
-    PAST_DATE_ERROR: (senderID) => {
+    PAST_DATE_ERROR: senderID => {
         console.log("Triggering past date error");
         send.sendTextMessages(senderID, ["We don't have a time machine yet. Please enter a date in the future"]);
     },
 
-    FACEBOOK_ERROR: (senderID) => {
+    FACEBOOK_ERROR: senderID => {
         console.log("triggering facebook error");
         send.sendTextMessages(senderID, ["A facebook error occured. Sorry :("]);
         user.setInputState(senderID, 'DEFAULT');
     },
 
-    DUPLICATE_EVENT_NAME_ERROR: (senderID) => {
+    DUPLICATE_EVENT_NAME_ERROR: senderID => {
         console.log("triggering duplicate event name error");
-        send.sendTextMessages(senderID, ["You already have an event with that name.", "Please enter a different name"]);
+        send.sendTextMessages(senderID, ["An event with that name already exists.", "Please enter a different name"]);
     },
 
-    UNSCHEDULED_EVENT_ERROR: (senderID) => {
+    UNSCHEDULED_EVENT_ERROR: senderID => {
         console.log("triggering unscheduled event error");
         send.sendTextMessages(senderID, ["You have an event that you did not finish scheduling", "Please schedule it first"]);
-    }
+    },
 
+    ALREADY_SUBSCRIBED_TO_EVENT_ERROR: senderID => {
+        console.log("triggering already subscribed to event error");
+        send.sendTextMessages(senderID, ["You aready subscribed to this event"] );
+        user.setInputState('DEFAULT');
+    }
 }

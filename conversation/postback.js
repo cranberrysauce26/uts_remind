@@ -7,10 +7,24 @@ const event = require('../model/event');
 const failure = require('./failure');
 
 module.exports = function (senderID, payload) {
+    let queryIndex = payload.indexOf('?');
+    if (queryIndex !== -1) {
+        let command = payload.substring(0, queryIndex);
+        console.log("command is", command);
+        let query = payload.substring(queryIndex+1);
+        console.log("query is", query);
+        return postbacks[command](senderID, query);
+    }
     postbacks[payload](senderID);
 }
 
 const postbacks = {
+
+    DEFAULT: function (senderID) {
+        user.setInputState(senderID, 'DEFAULT').catch(failure(senderID));
+        send.sendTextMessages(senderID, ["You're back home"]);
+    },
+
     GET_STARTED: function (senderID) {
         console.log("New user with id", senderID);
         send.sendTextMessages(senderID, ["Welcome to UTS Remind", "Please give me a second to set up your account"]);
@@ -20,14 +34,10 @@ const postbacks = {
                 console.log("postback.js. succesfully created user with id", senderID);
                 send.sendTextMessages(
                     senderID,
-                    ["All right!", "TESTING: type 'add event' "]
+                    ["All right!", "To the testers, type 'add event' or 'list events'"]
                 );
             })
             .catch(failure(senderID));
-    },
-
-    LIST_FUTURE_EVENTS_FOR_USER: function (senderID) {
-        return;
     },
 
     CREATE_EVENT: function (senderID) {
@@ -56,6 +66,59 @@ const postbacks = {
             .deleteUnscheduledEvent(senderID)
             .then(() => {
                 user.setInputState(senderID, 'DEFAULT').catch(failure(senderID));
+            })
+            .catch(failure(senderID));
+    },
+
+    LIST_ALL_EVENTS_IN_COMING_WEEK: function (senderID) {
+        console.log("Listing events in coming week");
+        event
+            .listAllEventsInComingWeek()
+            .then( (eventNames) => {
+                console.log("In then with eventNames", eventNames);
+                // Send buttons.
+                let buttons = [];
+                eventNames.forEach( eventName => {
+                    buttons.push({
+                        text: eventName,
+                        payload: 'DESCRIBE_EVENT?'+eventName
+                    });
+                });
+                send.sendButtons(senderID, 'Here are the events in the coming week. Tap to get a description')
+            })
+    },
+
+    DESCRIBE_EVENT: function (senderID, eventName) {
+        console.log("In describe event with event name", eventName);
+        event
+            .getDescription(eventName)
+            .then( description => {
+                console.log("got description", description);
+                send.sendTextMessages(
+                    senderID, 
+                    ["Here's the description for event "+eventName, description], 
+                    () => {
+                        send.sendQuickReplies(senderID, 'Schedule this event', [
+                            {
+                                text: 'Schedule',
+                                payload: 'SUBSCRIBE_TO_EVENT?'+eventName
+                            },
+                            {
+                                text: 'Cancel',
+                                payload: 'DEFAULT'
+                            }
+                        ]);
+                    }
+                );
+            })
+    },
+
+    SUBSCRIBE_TO_EVENT: function (senderID, eventName) {
+        console.log("adding user to event");
+        event
+            .addUserToEvent(senderID, eventName)
+            .then( () => {
+                send.sendTextMessages(senderID, ["You've been added to the event!"]);
             })
             .catch(failure(senderID));
     }
